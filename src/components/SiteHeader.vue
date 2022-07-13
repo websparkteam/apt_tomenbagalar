@@ -70,6 +70,9 @@ export default {
 </script>
 <style>
 body{padding-top: 74px;}
+@media screen and (max-width: 1024px){
+    body{padding-top: calc(74px + 20px);}
+}
 @media screen and (max-width: 767px){
     body{padding-top: calc(124px + 20px);}
 }

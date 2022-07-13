@@ -7,7 +7,7 @@
         <router-link to="#"><img class="image" src="../assets/nobelaff-roksibel-150mg-n10-101341812-1.jpg" alt="Роксибел 150мг N10"></router-link>
         <div class="title-wrap">
             <router-link to="/search?company=Нобел АФФ" class="sub-title">Нобел АФФ</router-link>
-            <router-link to="#" class="title">Роксибел 150мг N10</router-link>
+            <router-link to="/product" class="title">Роксибел 150мг N10</router-link>
         </div>
         <div class="block">
             <div class="price-wrap">
