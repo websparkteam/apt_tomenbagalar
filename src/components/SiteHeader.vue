@@ -244,9 +244,9 @@ header #search{
 }
 
 .search-dropdown .note{
-    font-size: 14px; 
-    color: var(--color-text-secondary);
+    font-size: 14px;
     padding: 14px 0;
+    font-weight: 500;
 }
 .search-dropdown .note:first-child{padding-top: 0;}
 .search-dropdown .recent{
