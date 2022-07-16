@@ -74,14 +74,6 @@
                     </ul>
                     <router-link to="/cart/checkout" class="order-button ob-1">Оформить заказ</router-link>
                 </div>
-                
-                <div class="page">
-                    <div class="title">Продолжить без регистрации</div>
-                    <div class="text">
-                        Отлично подходит для одноразовых заказов
-                    </div>
-                    <router-link to="/cart/checkout" class="order-button ob-2">Продолжить без регистрации</router-link>
-                </div>
             </div>
         </div>
     </div>
@@ -94,7 +86,7 @@
             <div id="auth">
                 <div class="form">
                     <div class="auth-title">Войти</div>
-                    <div class="text">Для получения персональных и сезонных скидок, а также уникальных предложений</div>
+                    <div class="text"><span>Авторизуйтесь для получения персональных</span> скидок и уникальных предложений</div>
                     <div class="input-group">
                         <label>Телефон</label>
                         <input type="text" placeholder="+7 (___) ___-____" autocomplete="phone" value="+7">
@@ -120,11 +112,11 @@
                         <input type="text" placeholder="+7 (___) ___-____" autocomplete="phone" value="+7">
                     </div>
                     <div class="input-group">
-                        <label>Пароль</label>
-                        <input type="password" placeholder="Пароль" autocomplete="off">
+                        <label>Имя и Фамилия</label>
+                        <input type="text" placeholder="Имя и фамилия" autocomplete="name">
                     </div>
                     <div class="input-group">
-                        <label>Подтвердите пароль</label>
+                        <label>Пароль</label>
                         <input type="password" placeholder="Пароль" autocomplete="off">
                     </div>
                     <div class="alert-area">
@@ -134,6 +126,12 @@
                     <div class="switch-wrap">
                         <span class="switch">Уже есть Аккаунт ? Войти</span>
                     </div>
+                </div>
+                
+                <div class="unsign-continue">
+                    <div class="title">Продолжить без регистрации</div>
+                    <div class="text" style="padding: 0; text-align: left;">Отлично подходит для одноразовых заказов</div>
+                    <router-link to="/cart/checkout" class="order-button ob-2">Продолжить без регистрации</router-link>
                 </div>
                 
             </div>
@@ -450,9 +448,6 @@ export default {
 }
 .sidebar .order-button.ob-1{
     background: var(--color-main);
-}
-.sidebar .order-button.ob-2{
-    background: rgb(248,154,43);
 }
 /* ===== END SIDEBAR STYLES ===== */
 </style>
