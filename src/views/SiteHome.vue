@@ -1,10 +1,9 @@
 <template>
     <div class="flex-centered">
         <div class="container">
-
             <carousel :autoplay="9000" :wrap-around="true" :items-to-show="1">
-                <slide v-for="(i, ind) in main_banners" :key="ind">
-                    <img :src="i.image" alt="">
+                <slide v-for="(i, ind) in main_banners" :key="ind" @mousedown="adMousedown" @mouseup="adClick($event, i)" :style="{cursor: i.url ? 'pointer' : 'unset'}">
+                    <img :src="i.image" alt="Banner">
                 </slide>
 
                 <template #addons>
@@ -12,7 +11,6 @@
                     <pagination />
                 </template>
             </carousel>
-
             <section>
                 <div class="pad-32">
                     <h2 class="page-header">Каталог товаров</h2>
@@ -72,6 +70,7 @@
 import 'vue3-carousel/dist/carousel.css';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import ProductsSection from '../components/ProductsSection.vue';
+import { inject } from '@vue/runtime-core';
 
 export default {
     components: {
@@ -83,12 +82,19 @@ export default {
     },
     data(){
         return{
-            main_banners: [
-                {image: require('../assets/banners/banner1.jpg')},
-                {image: require('../assets/banners/banner2.jpg')},
-                {image: require('../assets/banners/banner3.jpg')},
-                {image: require('../assets/banners/banner4.jpg')},
-            ],
+            ready: false,
+            serverQuery: Function,
+            landyshTools: Object,
+            search: '',
+            autocompList: [],
+            loadingSearch: false,
+            searchDropdown: false,
+            lastLetter: 0,
+            banners_loaded: false,
+            main_banners: [],
+            sideTopBanner: {},
+            sideBottomBanner: {},
+            adClickedPlace: {x: 0, y: 0},
             breakpoints: {
                 1000: {itemsToShow: 5},
                 700: {itemsToShow: 3},
@@ -110,6 +116,87 @@ export default {
             ],
         }
     },
+    mounted() {
+        this.serverQuery = inject('serverQuery');
+        this.landyshTools = inject('landyshTools');
+        this.ready = true;
+        document.addEventListener('click', this.windowClick);
+
+        this.initBanners();
+    },
+    unmounted() {
+        document.removeEventListener('click', this.windowClick);
+    },
+    methods: {
+        async initBanners() {
+            let response = (await this.serverQuery('getBanners')).data.message,
+				banners = response;
+            for(let i in banners) {
+                switch(parseInt(banners[i].type)) {
+                    case 0: {
+                        this.main_banners.push({
+                            image: banners[i].image,
+                            url: banners[i].url
+                        });
+                    } break;
+                    case 1: {
+                        this.sideTopBanner = {
+                            image: banners[i].image,
+                            url: banners[i].url
+                        };
+                    } break;
+                     case 2: {
+                        this.sideBottomBanner = {
+                            image: banners[i].image,
+                            url: banners[i].url
+                        };
+                    } break;
+                }
+            }
+            this.banners_loaded = true;
+        },
+        async searchAutocomplete() {
+			let thisMoment = Date.now();
+			this.lastLetter = thisMoment;
+			this.autocompList.splice(0, this.autocompList.length);
+			this.searchDropdown = true;
+			this.loadingSearch = true;
+            let response = (await this.serverQuery('getByName', {input: this.search, offset: 0, limit: 4})).data.message,
+				searchList = response;
+			if (this.lastLetter != thisMoment) return;
+            this.autocompList.splice(0, this.autocompList.length);
+            for(let i in searchList){
+                this.landyshTools.parseItem(searchList[i]);
+                this.autocompList.push(searchList[i]);
+            }
+            console.log(this.autocompList);
+			this.loadingSearch = false;
+		},
+        windowClick(event) {
+            if (!this.searchDropdown) return;
+            let isClickInside = this.$refs['itemSelect'].contains(event.target);
+            if (!isClickInside) {
+                if (this.$refs['itemInput'].contains(event.target)) return false;
+                this.searchDropdown = false;
+            }
+        },
+        openUrl(url) {
+            if (!url) return;
+            document.location.href = url;
+        },
+        adMousedown(e) {
+            this.adClickedPlace = {x: e.clientX, y: e.clientY};
+        },
+        adClick(e, i) {
+            if (!i.url) return;
+            let a = this.adClickedPlace,
+                b = {x: e.clientX, y: e.clientY},
+                dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+            if (dist < 5) {
+                this.openUrl(i.url);
+            }
+        }
+    }
 };
 </script>
 

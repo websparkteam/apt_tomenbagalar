@@ -1,108 +1,184 @@
 <template>
     <div class="flex-centered">
         <div class="container">
-            <div class="path">
-                <router-link class="pathlink" to="/">Главная</router-link>
-                <router-link class="pathlink" to="/search">Каталог</router-link>
-                <span class="pathlink">Роксибел 150мг N10</span>
-            </div>
+            <div class="loading-template" v-if="!data"></div>
+            <template v-else>
+                <div class="path">
+                    <router-link class="pathlink" to="/">Главная</router-link>
+                    <router-link class="pathlink" to="/search">Каталог</router-link>
+                    <span class="pathlink">{{data.name}}</span>
+                </div>
 
-            <div class="wrap-grid">
-                <div class="product-card">
-                    <div class="image">
-                        <img src="../assets/nobelaff-roksibel-150mg-n10-101341812-1.jpg" alt="Роксибел 150мг N10">
-                    </div>
-                    <div class="mini-title">О Товаре</div>
-                    <div class="group">
-                        <div class="price-wrap">
-                            <div class="price-old">1 905</div>
-                            <div class="price">1 905 <div class="t-sym">₸</div></div>
+                <div class="wrap-grid">
+                    <div class="product-card">
+                        <div class="image">
+                            <img :src="data.images.length ? data.images[0] : require('../assets/no-image.jpg')" :alt="data.name" @error="$event.target.src = require('../assets/no-image.jpg');">
                         </div>
-                        <div class="action">
-                            <button class="addtocart" v-if="true">В Корзину</button>
-                            <div v-else class="quantity-cart">
-                                <button class="minus">-</button>
-                                <input class="number" type="number" value="1">
-                                <button class="minus">+</button>
+                        <div class="mini-title">О Товаре</div>
+                        <div class="group">
+                            <div class="price-wrap">
+                                <!-- <div class="price-old">1 905</div> -->
+                                <div class="price">{{data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}} <div class="t-sym">₸</div></div>
+                            </div>
+                            <div class="action">
+                                <button class="addtocart" v-if="RAMtools.getRAM.cartList.findIndex(i=>i.id==data.id) == -1" :class="{'add-cart': true}" @click="RAMtools.tileAddToCart(data)">В Корзину</button>
+                                <div v-else class="quantity-cart">
+                                    <button class="minus" @click="RAMtools.changeAmount(data, false);">
+                                        <i v-if="RAMtools.getRAM.cartList[RAMtools.getRAM.cartList.findIndex(i => i.med_id == data.med_id)].amount == 1" class="fa-regular fa-trash-can" style="display: flex; color: #131313;"></i>
+                                        <span style="color: #131313;" v-else>-</span>
+                                    </button>
+                                    <input class="number" type="number" v-model.number="RAMtools.getRAM.cartList[RAMtools.getRAM.cartList.findIndex(i => i.med_id == data.med_id)].amount" @input="RAMtools.changeAmount(data)">
+                                    <button class="minus" @click="RAMtools.changeAmount(data, true);">+</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="details">
-                    <h2 class="card-title">Роксибел 150мг N10</h2>
-                    <div class="mini-title">Параметры</div>
-                    <div class="params-wrap">
+                    <div class="details">
+                        <h2 class="card-title">{{data.name}}</h2>
+                        <div class="mini-title">Параметры</div>
+                        <div class="params-wrap">
+                            <div class="item">
+                                <div class="name">Артикул</div>
+                                <div class="value">{{data.med_id}}</div>
+                            </div>
+                            <div class="item">
+                                <div class="name">Производитель</div>
+                                <div class="value">{{data.brand}}</div>
+                            </div>
+                            <div class="item">
+                                <div class="name">Страна</div>
+                                <span v-if="data.item_data" class="value">{{data.item_data.country_name}}</span>
+                            </div>
+                        </div>
+                        <div class="mini-title">Поделиться</div>
+                        <div class="share-wrap">
+                             <button @click="clipboard(data.med_id)"><i class="fa-regular fa-copy"></i>Артикул：{{data.med_id}}</button>
+                            <button @click="clipboard(`landysh.kz/product/${data.med_id}`)"><i class="fa-solid fa-link"></i>Скопировать ссылку</button>
+                            <div v-if="successClipboard" class="successClipboard">Успешно скопировано!</div>
+                        </div>
+                    </div>
+                    <div class="delivery-info">
+                        <div class="mini-title"><i class="fa-solid fa-info"></i></div>
                         <div class="item">
-                            <div class="name">Артикул</div>
-                            <div class="value">54265</div>
+                            <div class="title"><i class="fa-solid fa-truck-ramp-box"></i> Доставка</div>
+                            <div class="text">Мы доставляем товар с 9:00 до 22:00 по пути следования маршрута автотранспорта</div>
                         </div>
                         <div class="item">
-                            <div class="name">Производитель</div>
-                            <div class="value">Нобел АФФ</div>
-                        </div>
-                        <div class="item">
-                            <div class="name">Страна</div>
-                            <div class="value">Россия</div>
+                            <div class="title"><i class="fa-solid fa-parachute-box"></i> Самовывоз</div>
+                            <div class="text">Перед приездом забронируйте в магазине товар для самовывоза</div>
                         </div>
                     </div>
-                    <div class="mini-title">Поделиться</div>
-                    <div class="share-wrap">
-                        <button><i class="fa-regular fa-copy"></i>Артикул: 54265</button>
-                        <button><i class="fa-solid fa-link"></i>Скопировать ссылку</button>
-                    </div>
                 </div>
-                <div class="delivery-info">
-                    <div class="mini-title"><i class="fa-solid fa-info"></i></div>
-                    <div class="item">
-                        <div class="title"><i class="fa-solid fa-truck-ramp-box"></i> Доставка</div>
-                        <div class="text">Мы доставляем товар с 9:00 до 22:00 по пути следования маршрута автотранспорта</div>
-                    </div>
-                    <div class="item">
-                        <div class="title"><i class="fa-solid fa-parachute-box"></i> Самовывоз</div>
-                        <div class="text">Перед приездом забронируйте в магазине товар для самовывоза</div>
-                    </div>
-                </div>
-            </div>
 
-            <section class="block">
-                <div class="pad-bottom-16">
-                    <h2 class="page-header">Наличие в аптеках</h2>
-                </div>
-                <div class="pharmacy-list">
-                    <div class="item" v-for="i,ind in 5" :key="ind">
-                        <div class="adress">Ландыш на Бокейхан, 32</div>
-                        <div class="schedule">Ежедневно 9:00-23:00</div>
-                        <div class="stock"><div class="indicator"></div>Наличие: 5шт</div>
-                        <div class="price">1 925₸</div>
-
-                        <!-- 
-                            INDICATOR COLORS 
-                            red  - rgb(255,103,70)
-                            yellow - rgb(255, 208, 67)
-                            green - rgb(90,191,112)
-                        -->
+                <section class="block">
+                    <div class="pad-bottom-16">
+                        <h2 class="page-header">Наличие в аптеках</h2>
                     </div>
-                </div>
-            </section>
+                    <div class="pharmacy-list">
+                        <div class="item" v-for="i,ind in 5" :key="ind">
+                            <div class="adress">Ландыш на Бокейхан, 32</div>
+                            <div class="schedule">Ежедневно 9:00-23:00</div>
+                            <div class="stock"><div class="indicator"></div>Наличие: 5шт</div>
+                            <div class="price">1 925₸</div>
 
-            <section class="block">
-                <div class="pad-bottom-16">
-                    <h2 class="page-header">Описание</h2>
-                </div>
-                <ul class="description-list minimized">
-                    <li v-for="(i, ind) in 10" :key="ind"><span>Тип</span><span class="val">профилактическое средство</span></li>
-                </ul>
-                <div class="description pad-top-16">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error similique odit aut, repellat nulla assumenda quos necessitatibus earum ut incidunt corrupti nobis sunt laudantium dolorum non iusto distinctio in atque.
-                </div>
-            </section>
+                            <!-- 
+                                INDICATOR COLORS 
+                                red  - rgb(255,103,70)
+                                yellow - rgb(255, 208, 67)
+                                green - rgb(90,191,112)
+                            -->
+                        </div>
+                    </div>
+                </section>
+
+                <section class="block">
+                    <div class="pad-bottom-16">
+                        <h2 class="page-header">Описание</h2>
+                    </div>
+                    <ul class="description-list minimized">
+                        <li v-for="(i, ind) in 10" :key="ind"><span>Тип</span><span class="val">профилактическое средство</span></li>
+                    </ul>
+                    <div class="description pad-top-16">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error similique odit aut, repellat nulla assumenda quos necessitatibus earum ut incidunt corrupti nobis sunt laudantium dolorum non iusto distinctio in atque.
+                    </div>
+                </section>
+            </template>
         </div>
     </div>
 </template>
-
 <script>
+import { inject } from '@vue/runtime-core';
+import pharmacies from '../assets/documents/pharmacies';
 export default {
+    components: {  },
+    setup() {
+        window.scrollTo(0, 0);
+    },
+    data() {
+        return {
+            ready: false,
+            med_id: this.$route.params.id,
+            data: null,
+            serverQuery: Function,
+            landyshTools: Object,
+            RAMtools: Object,
+            successClipboard: false,
+            requestAvailability: false
+        }
+    },
+    mounted() {
+        this.serverQuery = inject('serverQuery');
+        this.landyshTools = inject('landyshTools');
+        this.RAMtools = inject('RAM');
+        this.ready = true;
 
+        this.init();
+    },
+    methods: {
+        async init() {
+            let response = await this.serverQuery('getZelenkaData', {med_id: this.med_id}),
+                data = response.data.message;
+            this.landyshTools.parseItem(data);
+            this.data = data;
+            console.log(this.data);
+
+            let recentProducts = [];
+            if (localStorage.getItem('recentProducts')) {
+                recentProducts = JSON.parse(localStorage.getItem('recentProducts'));
+            }
+            recentProducts.splice(10, recentProducts.length);
+            recentProducts.unshift(this.med_id);
+            localStorage.setItem('recentProducts', JSON.stringify(recentProducts));
+        },
+        clipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                this.successClipboard = true;
+                setTimeout(() => {
+                    this.successClipboard = false;
+                }, 2000);
+            }, function(err) {
+                console.error('Async: Could not copy text: ', err);
+            });
+        },
+        getPharmaDataById(id) {
+            let ind = pharmacies.findIndex(e=>e.id == id);
+            if (ind == -1) return {};
+            return pharmacies[ind];
+        },
+        getStockText(qtty) {
+            switch(this.RAMtools.getStockDegree(parseInt(qtty))) {
+                case 3: return {text: 'большой запас', color: 'rgb(34, 181, 115)'};
+                case 2: return {text: 'средний запас', color: '#ffc107'};
+                case 1: return {text: 'малый запас', color: '#f44336'};
+                default: return {text: 'нет в наличии', color: '#8e8e8e'};
+            }
+        },
+    },
+    computed: {
+        available() {
+            return this.data.item_data != null;
+        }
+    }
 }
 </script>
 
@@ -136,6 +212,23 @@ export default {
     box-sizing: border-box;
     margin-top: 20px;
     border-radius: 4px;
+}
+.loading-template {
+    height: 435px;
+    border-radius: 10px;
+	background: linear-gradient(270deg, #a1a1a1, #dadada, #a1a1a1);
+	background-size: 400% 400%;
+	animation: flicker-loading 1s infinite;
+	opacity: 0.3;
+}
+.successClipboard {
+    position: absolute;
+    background-color: #FFF;
+    box-shadow: var(--box-shadow);
+    left: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: bold;
 }
 /* ===== END STYLES ===== */
 

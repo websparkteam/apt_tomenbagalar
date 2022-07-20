@@ -1,38 +1,58 @@
 <template>
-    <div class="product-card" v-for="i, ind in 8" :key="ind">
+    <div class="product-card" v-if="ready">
         <div class="tags">
             <span class="tag new">Акция</span>
             <span class="tag discount">-5%</span>
         </div>
-        <router-link to="#"><img class="image" src="../assets/nobelaff-roksibel-150mg-n10-101341812-1.jpg" alt="Роксибел 150мг N10"></router-link>
+        <router-link :to="getProductUrl"><img class="image" :src="landyshTools.getImage(data.images)" @error="$event.target.src = require('../assets/no-image.jpg');" :alt="data.name"></router-link>
         <div class="title-wrap">
-            <router-link to="/search?company=Нобел АФФ" class="sub-title">Нобел АФФ</router-link>
-            <router-link to="/product" class="title">Роксибел 150мг N10</router-link>
+            <router-link :to="getProductUrl" class="sub-title">{{data.brand}}</router-link>
+            <router-link :to="{name: 'Product', params: {id: data.med_id}}" class="title">{{data.name}}</router-link>
         </div>
         <div class="block">
             <div class="price-wrap">
-                <div class="price-old">1 905</div>
-                <div class="price">1 905 <div class="t-sym">₸</div></div>
+                <div class="price-old">{{(data.price+240).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}}</div>
+                <div class="price">{{data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}}<div class="t-sym">₸</div></div>
             </div>
             <div class="action">
-                <button class="addtocart" v-if="false">В Корзину</button>
+                <button class="addtocart" v-if="RAMtools.getRAM.cartList.findIndex(i=>i.id==data.id) == -1" @click="RAMtools.tileAddToCart(data)">В Корзину</button>
                 <div v-else class="quantity-cart">
-                    <button class="minus">-</button>
-                    <input class="number" type="number" value="1">
-                    <button class="minus">+</button>
-                </div>
+                <button class="minus" @click="RAMtools.changeAmount(data, false);">
+                    <i v-if="RAMtools.getRAM.cartList[RAMtools.getRAM.cartList.findIndex(i => i.med_id == data.med_id)].amount == 1" class="fa-regular fa-trash-can" style="display: flex; color: #131313;"></i>
+                    <span style="color: #131313;" v-else>-</span>
+                </button>
+                <input class="number" type="number" v-model.number="RAMtools.getRAM.cartList[RAMtools.getRAM.cartList.findIndex(i => i.med_id == data.med_id)].amount" @input="RAMtools.changeAmount(data)">
+                <button class="minus" @click="RAMtools.changeAmount(data, true);">+</button>
+            </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { inject } from '@vue/runtime-core'
 export default {
-    data(){
-        return{
+    props: {
+        data: Object
+    },
+    data() {
+        return {
+            ready: false,
+            landyshTools: Object,
+            RAMtools: Object
         }
     },
-};
+    mounted() {
+        this.landyshTools = inject('landyshTools');
+        this.RAMtools = inject('RAM');
+        this.ready = true;
+    },
+    computed: {
+        getProductUrl() {
+            return `/product/${this.data.med_id}`;
+        }
+    }
+}
 </script>
 
 <style scoped>

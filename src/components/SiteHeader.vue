@@ -1,5 +1,5 @@
 <template>
-    <header class="flex-centered">
+    <header class="flex-centered" v-if="ready">
         <div class="container">
             <div class="container-unit">
                 <div class="element menu-icon">
@@ -18,29 +18,35 @@
             <div class="container-unit">
                 <div id="search">
                     <div class="search-body">
-                        <input placeholder="Найти лекарство...">
+                        <input placeholder="Найти лекарство..." ref="itemInput" @keydown.enter="addToHistory(); $router.push({path: '/search', query: {name: inputs.searchInput}}); searchDropdown=false" v-model="inputs.searchInput" @input="searchAutocomplete" @click="inputs.searchInput.length > 0 ? searchDropdown=true : (searchHistory.length ? searchDropdown=true : false)">
                         <button><!-- <i class="fa-solid fa-magnifying-glass"></i> --></button>
                     </div>
-                    <div class="search-dropdown" v-if="false">
-                        <div class="note">История запросов:</div>
-                        <div class="recent">
-                            <router-link to="/search" class="item" v-for="(i, ind) in 3" :key="ind"><i class="fa-solid fa-arrow-rotate-left"></i> Hello kitty</router-link>
-                        </div>
-                        <div class="note">Результаты глобального поиска:</div>
-                        <div class="list">
-                            <div class="message"><i class="fa-solid fa-person-falling"></i> По Вашему запросу ничего не найдено.</div>
-                            <!-- <div class="loading-unit" v-if="loadingSearch"></div> -->
-                            <div class="list-items" v-for="(i, ind) in 5" :key="ind">
-                                <router-link to="#" class="item">
-                                    <img src="../assets/no-image.jpg" alt="Роксибел 150мг N10">
-                                    <div class="details">
-                                        <span class="medname">Роксибел 150мг N10</span>
-                                        <span class="min">Нобел АФФ</span>
-                                    </div>
-                                </router-link>
+                    <div class="search-dropdown" v-if="searchDropdown" ref="itemSelect">
+                        <template v-if="inputs.searchInput.length <= 0 && searchHistory.length > 0"> 
+                            <div class="note">История запросов:</div>
+                            <div class="recent">
+                                <router-link @click="inputs.searchInput=i" :to="{path: '/search', query: {name: i}}" class="item" v-for="(i, ind) in searchHistory" :key="ind" v-show="ind < 5"><i class="fa-solid fa-arrow-rotate-left"></i> {{i}}</router-link>
                             </div>
-                            <router-link to="#" class="item show-more">Показать больше</router-link>
-                        </div>
+                        </template>
+                        <template v-else>
+                            <div class="note">Результаты глобального поиска:</div>
+                            <div class="list">
+                                <div class="message" v-if="!autocompList.length && !loadingSearch"><i class="fa-solid fa-person-falling"></i>По Вашему запросу ничего не найдено</div>
+                                <div class="loading-unit" v-if="loadingSearch"></div>
+                                <div class="list-items" v-for="(i, ind) in autocompList" :key="ind">
+                                    <router-link :to="`/product/${i.med_id}`" class="item" @click="searchDropdown=false; addToHistory(i.name); inputs.searchInput='';">
+                                        <img :src="i.images.length ? i.images[0] : require('../assets/no-image.jpg')" :alt="i.name" @error="$event.target.src = require('../assets/no-image.jpg');">
+                                        <div class="details">
+                                            <div class="medname" v-html="`${(i.name.toLowerCase().replace(inputs.searchInput.toLowerCase(), '<b>'+inputs.searchInput.toLowerCase()+'</b>'))}`"></div>
+                                            <div class="min">{{i.brand}}</div>
+                                        </div>
+                                    </router-link>
+                                    <!-- <button ref="itemButton1" class="addtocart" v-if="RAMtools.getRAM.cartList.findIndex(e=>e.id==i.id) == -1" @click="RAMtools.tileAddToCart(i)"><i class="fa-solid fa-cart-plus"></i></button> -->
+                                    <!-- <div ref="itemButton2" class="addedtocart" v-else @click="RAMtools.changeAmount(i, false);"><i class="fa-solid fa-check"></i></div> -->
+                                </div>
+                                <router-link to="#" class="item show-more">Показать больше</router-link>
+                            </div>
+                        </template>
                     </div>
                 </div>
                 <router-link to="#" class="element user">
@@ -57,16 +63,111 @@
     <div id="populars" class="flex-centered">
         <div class="container">
             <div class="wrap">
-                <router-link to="#" class="item" v-for="(i, ind) in 8" :key="ind">Косметика</router-link>
+                <router-link :to="{path: '/search', query: {cat: i.id}}" class="item" v-for="(i, ind) in cats" :key="ind">{{i.name}}</router-link>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import cats from '../assets/scripts/getCategories'
+import { inject } from '@vue/runtime-core';
+import { mask } from 'maska'
+
 export default {
-  
-};
+    data(){
+        return{
+            ready: false,
+            cats,
+            mask,
+            category_dropbox: false,
+            search_dropbox: false,
+            serverQuery: Function,
+            landyshTools: Object,
+            RAMtools: Object,
+            autocompList: [],
+            medSearchList: [],
+            loadingSearch: false,
+            searchDropdown: false,
+            lastLetter: 0,
+            mobileMenu: false,
+            inputs: {},
+            searchHistory: [],
+            modalCatalog: false,
+            modalSelectedCat: 0,
+            stockRequests: {}
+        }
+    },
+    mounted() {
+        this.serverQuery = inject('serverQuery');
+        this.landyshTools = inject('landyshTools');
+        this.RAMtools = inject('RAM');
+        this.inputs = inject('inputs');
+        this.ready = true;
+        document.addEventListener('click', this.windowClick);
+
+        if (localStorage.getItem('searchHistory')) {
+            this.searchHistory = JSON.parse(localStorage.getItem('searchHistory'));
+            this.searchHistory.splice(5, this.searchHistory.length);
+        }
+        this.searchHistory.splice(0, this.searchHistory.length);
+    },
+    unmounted() {
+        document.removeEventListener('click', this.windowClick);
+    },
+    methods: {
+        addToHistory(text) {
+            let hist = text;
+            if (!text) hist = this.inputs.searchInput;
+            this.searchHistory.unshift(hist);
+            localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
+        },
+        async searchAutocomplete() {
+			let thisMoment = Date.now();
+			this.lastLetter = thisMoment;
+			this.autocompList.splice(0, this.autocompList.length);
+            this.medSearchList.splice(0, this.medSearchList.length);
+			this.searchDropdown = true;
+			this.loadingSearch = true;
+            let response = (await this.serverQuery('getByName', {input: this.inputs.searchInput, offset: 0, limit: 4})).data.message,
+				searchList = response;
+			if (this.lastLetter != thisMoment) return;
+            this.autocompList.splice(0, this.autocompList.length);
+            let empty = true;
+            for(let i in searchList){
+                empty = false;
+                this.landyshTools.parseItem(searchList[i]);
+                this.autocompList.push(searchList[i]);
+            }
+            if (empty) {
+                let response = (await this.serverQuery('searchInMedicine', {input: this.inputs.searchInput})).data.message,
+                    medSearchList = response;
+                for(let i in medSearchList){
+                    this.medSearchList.push(medSearchList[i]);
+                }
+            }
+            
+            console.log(this.autocompList);
+			this.loadingSearch = false;
+		},
+        windowClick(event) {
+            if (!this.searchDropdown) return;
+            let isClickInside = this.$refs['itemSelect'].contains(event.target);
+            if (!isClickInside) {
+                try {
+                if (this.$refs['itemInput'].contains(event.target)) return false;
+                if (this.$refs['itemButton1']) {
+                    if (this.$refs['itemButton1']?.contains(event.target)) return false;
+                }
+                if(this.$refs['itemButton2']) {
+                    if (this.$refs['itemButton2']?.contains(event.target)) return false;
+                }
+                } catch(e){e}
+                this.searchDropdown = false;
+            }
+        },
+    }
+}
 </script>
 <style>
 body{padding-top: 74px;}
@@ -373,6 +474,25 @@ header #search{
 }
 @media screen and (max-width: 480px){
     header .element .value{display: none;}
+}
+.medname {
+    text-transform: lowercase;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    vertical-align: middle;
+    overflow: hidden;
+    font-weight: 300;
+}
+.medname::first-letter{text-transform: capitalize;}
+.loading-unit {
+    height: 300px;
+    border-radius: 10px;
+	background: linear-gradient(270deg, #a1a1a1, #dadada, #a1a1a1);
+	background-size: 400% 400%;
+	animation: flicker-loading 1s infinite;
+	opacity: 0.3;
 }
 /* ===== END HEADER MENU STYLES ===== */
 
