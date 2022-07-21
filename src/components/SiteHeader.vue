@@ -182,7 +182,7 @@ body{padding-top: 74px;}
 
 <style scoped>
 .container{
-    max-width: 1300px;
+    max-width: 1400px;
     padding: 0 10px;
     box-sizing: border-box;
 }
@@ -510,24 +510,23 @@ header #search{
     width: 100%;
     display: flex;
     justify-content: space-between;
+    gap: 15px;
 }
 #populars .wrap a{
-    padding: 10px 12px;
+    padding: 12px 0;
     box-sizing: border-box;
     position: relative;
     font-size: 14px;
     text-align: center;
     font-weight: 500;
 }
-#populars .wrap a:first-child{padding-left: 0;}
-#populars .wrap a:last-child{padding-right: 0;}
 #populars .wrap a::after{
     content: '';
     position: absolute;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 50%;
+    width: 80%;
     height: 1px;
     background: var(--color-main);
     display: block;

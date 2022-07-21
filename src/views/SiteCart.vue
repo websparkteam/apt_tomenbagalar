@@ -84,15 +84,22 @@
             <span class="close"><i class="fa-solid fa-xmark"></i></span>
             <div class="top">Авторизация</div>
             <div id="auth">
+                
+                <div class="unsign-continue">
+                    <div class="title">Продолжить без регистрации</div>
+                    <div class="text" style="padding: 0;">Отлично подходит для одноразовых заказов</div>
+                    <router-link to="/cart/checkout" class="order-button ob-2">Продолжить без регистрации</router-link>
+                </div>
+
+                <div class="split"><span>или</span></div>
+
                 <div class="form">
                     <div class="auth-title">Войти</div>
-                    <div class="text"><span>Авторизуйтесь для получения персональных</span> скидок и уникальных предложений</div>
+                    <div class="text">Авторизуйтесь для получения персональных <span>скидок и уникальных предложений</span></div>
                     <div class="input-group">
-                        <label>Телефон</label>
                         <input type="text" placeholder="+7 (___) ___-____" autocomplete="phone" value="+7">
                     </div>
                     <div class="input-group">
-                        <label>Пароль</label>
                         <input type="password" placeholder="Пароль" autocomplete="off">
                     </div>
                     <div class="alert-area">
@@ -108,15 +115,12 @@
                     <div class="auth-title">Регистрация</div>
                     <div class="text">Следуя инструкциям пройдите не сложную процедуру регистрации</div>
                     <div class="input-group">
-                        <label>Телефон</label>
                         <input type="text" placeholder="+7 (___) ___-____" autocomplete="phone" value="+7">
                     </div>
                     <div class="input-group">
-                        <label>Имя и Фамилия</label>
                         <input type="text" placeholder="Имя и фамилия" autocomplete="name">
                     </div>
                     <div class="input-group">
-                        <label>Пароль</label>
                         <input type="password" placeholder="Пароль" autocomplete="off">
                     </div>
                     <div class="alert-area">
@@ -126,12 +130,6 @@
                     <div class="switch-wrap">
                         <span class="switch">Уже есть Аккаунт ? Войти</span>
                     </div>
-                </div>
-                
-                <div class="unsign-continue">
-                    <div class="title">Продолжить без регистрации</div>
-                    <div class="text" style="padding: 0; text-align: left;">Отлично подходит для одноразовых заказов</div>
-                    <router-link to="/cart/checkout" class="order-button ob-2">Продолжить без регистрации</router-link>
                 </div>
                 
             </div>
@@ -164,6 +162,7 @@ export default {
     margin-right: 8px;
     color: rgb(90,191,112);
 }
+.input-group{margin-top: 5px;}
 @media screen and (max-width: 767px){
     .container-grid{
         display: flex;

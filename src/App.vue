@@ -383,25 +383,34 @@ section{
     gap: 10px;
 }
 .input-group label{
+    padding-left: 22px;
+    box-sizing: border-box;
     font-size: 14px;
     font-weight: 500;
     
     color: #2e2f38;
 }
-.input-group input{
+.input-group input,
+.input-group textarea{
     width: 100%;
     height: 50px;
-    padding: 12px 16px;
+    padding: 12px 22px;
     box-sizing: border-box;
     border: 1px solid var(--color-border);
-    border-radius: 4px;
+    border-radius: 100px;
     /* background-color: #f9f9f9; */
     color: var(--color-black);
     font-size: 14px;
     font-family: var(--font-primary);
     color: #2e2f38;
+    outline: none;
 }
+.input-group textarea{height: 80px; border-radius: 12px;}
 
+.input-group input:hover,
+.input-group textarea:hover{
+    border-color: var(--color-main);
+}
 
 
 
@@ -410,7 +419,7 @@ section{
 .fullscreen {
     position: fixed;
     width: 100vw;
-    min-height: 100vh;
+    height: 100vh;
     padding: 20px;
     box-sizing: border-box;
     display: flex;
@@ -425,9 +434,9 @@ section{
 .modal {
     display: flex;
     flex-direction: column;
-    width: 500px;
-    height: max-content;
-    max-height: 640px;
+    width: 450px;
+    /* height: max-content; */
+    max-height: 90%;
     background: #fff;
     border-radius: 22px;
     overflow: hidden;
@@ -512,15 +521,14 @@ section{
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 20px;
+    padding: 10px 15px;
     box-sizing: border-box;
 }
 .modal #auth .auth-title{
     width: 100%;
     font-size: 18px;
     font-weight: 600;
-    color: var(--color-main);
-    /* font-family: var(--font-secondary); */
+    font-family: var(--font-secondary);
     text-align: center;
 }
 .modal #auth .form{
@@ -530,11 +538,14 @@ section{
     gap: 12px;
 }
 .modal #auth .text{
-    padding: 0 25px;
+    padding: 0 22px;
     box-sizing: border-box;
     text-align: center;
     color: var(--color-text-secondary);
     font-size: 14px;
+}
+.modal #auth .text span{
+    color: rgb(248,154,43);
 }
 .modal #auth .alert-area{
     width: 100%;
@@ -552,20 +563,23 @@ section{
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 32px;
+    padding: 15px 32px;
     box-sizing: border-box;
     border: none;
     background: var(--color-main);
-    border-radius: 4px;
+    border-radius: 100px;
     color: #fff;
     cursor: pointer;
     outline: none;
+    font-size: 16px;
     font-family: var(--font-primary);
     transition: .3s;
     letter-spacing: .5px;
+    box-shadow: 0 0 20px rgba(90 191 112 / 32%)
 }
 .modal #auth .form button:hover{
     opacity: .85;
+    box-shadow: none;
 }
 .modal #auth .switch-wrap{
     width: 100%;
@@ -583,10 +597,10 @@ section{
 .modal .unsign-continue{
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
     width: 100%;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -594,6 +608,32 @@ section{
     font-size: 17px;
     color: #131313;
     font-weight: 600;
+    text-align: center;
+}
+.modal #auth .split{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+.modal #auth .split::before{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 1px;
+    background: var(--color-border);
+}
+.modal #auth .split span{
+    position: relative;
+    z-index: 1;
+    display: block;
+    padding: 0 10px;
+    box-sizing: border-box;
+    background-color: #fff;
+    font-size: 14px;
 }
 .modal .unsign-continue .order-button.ob-2{
     display: flex;
@@ -603,18 +643,25 @@ section{
     height: 45px;
     padding: 12px;
     box-sizing: border-box;
-    border-radius: 4px;
+    border-radius: 40px;
     background-color: rgb(248,154,43,.2);
     font-size: 14px;
     font-weight: 600;
     color: rgb(248,154,43);
     letter-spacing: .5px;
+    text-align: center;
     transition: .3s;
 }
 .modal .unsign-continue .order-button:hover{
     background-color: rgb(248,154,43);
     color: #fff !important;
     opacity: .85;
+}
+@media screen and (max-width: 480px){
+    .modal{padding: 18px 22px;}
+    .modal #auth{padding: 10px 0;}
+    .modal #auth .text{padding: 0;}
+    .modal .unsign-continue{padding: 20px 12px;}
 }
 /* ===== END MODAL STYLES ===== */
 </style>

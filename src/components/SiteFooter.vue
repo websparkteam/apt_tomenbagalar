@@ -58,7 +58,7 @@ export default {
 </script>
 
 <style scoped>
-.container{max-width: 1300px;padding: 0 10px;}
+.container{max-width: 1400px;padding: 0 10px;}
 
 /* ===== HELP STYLES ===== */
 #help{
