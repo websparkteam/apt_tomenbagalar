@@ -262,6 +262,7 @@ export default {
     letter-spacing: .5px;
     border: none;
     outline: none;
+    cursor: pointer;
 }
 .make-order-block .order-button:hover{
     color: #fff !important;
