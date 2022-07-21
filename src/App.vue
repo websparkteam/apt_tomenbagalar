@@ -381,6 +381,7 @@ section{
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+    position: relative;
 }
 .input-group label{
     padding-left: 22px;
@@ -410,6 +411,19 @@ section{
 .input-group input:hover,
 .input-group textarea:hover{
     border-color: var(--color-main);
+}
+
+.input-group.iconed input,
+.input-group.iconed textarea{
+	padding-left: 45px;
+}
+.input-group.iconed .icon {
+	position: absolute;
+	top: 15px;
+	left: 16px;
+}
+.input-group.iconed .icon i{
+	color: #ccc;
 }
 
 
