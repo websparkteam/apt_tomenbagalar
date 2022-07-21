@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-centered flex-column">
+    <div class="flex-centered flex-column" v-if="ready">
         <div class="container">
             <div class="path">
                 <router-link class="pathlink" to="/">Главная</router-link>
@@ -11,43 +11,44 @@
         </div>
         <div class="container container-grid">
             <div id="cart-items">
-
-                <div class="empty-cart" v-if="false">
+                <div class="empty-cart" v-if="!RAMtools.getRAM.cartList.length">
                     <span class="icon"><i class="fa-solid fa-basket-shopping"></i></span>
                     <span class="title">Ваша корзина пуста</span>
                     <span class="text">Похоже, что Вы еще ничего не добавили в корзину.</span>
                     <router-link to="/search">Перейти к покупкам</router-link>
                 </div>
-
-                <div class="item" v-for="i, ind in 2" :key="ind">
-                    <div class="item-left">
-                        <img class="image" src="../assets/nobelaff-roksibel-150mg-n10-101341812-1.jpg" alt="Роксибел 150мг N10">
-                        <div class="descriptions">
-                            <router-link to="#" class="title">Роксибел 150мг N10</router-link>
-                            <div class="code">Код товара: 77896</div>
-                            <div class="company">Нобел АФФ</div>
-                        </div>
-                    </div>
-                    <div class="item-right">
-                        <div class="quantity">
-                            <div class="quantity-cart">
-                                <button class="minus">-</button>
-                                <input class="number" type="number" value="1">
-                                <button class="minus">+</button>
+                <template v-else>
+                    <div class="item" v-for="(i, ind) in RAMtools.getRAM.cartList" :key="ind">
+                        <div class="item-left">
+                            <img class="image" :src="landyshTools.getImage(i.images)" :alt="i.name" @error="$event.target.src = require('../assets/no-image.jpg');">
+                            <div class="descriptions">
+                                <router-link :to="{name: 'Product', params: {id: i.med_id}}" class="title">{{i.name}}</router-link>
+                                <div class="code">Код товара: {{i.med_id}}</div>
+                                <div class="company">{{i.brand}}</div>
                             </div>
                         </div>
-                        <div class="price">121 905 <div class="t-sym">₸</div></div>
-                        <div class="close">
-                            <i class="fa-solid fa-xmark"></i>
+                        <div class="item-right">
+                            <div class="quantity">
+                                <div class="quantity-cart">
+                                    <button class="minus" @click="RAMtools.changeAmount(i, false);">
+                                        <i v-if="RAMtools.getRAM.cartList[RAMtools.getRAM.cartList.findIndex(e => e.med_id == i.med_id)].amount == 1" class="fa-regular fa-trash-can" style="display: flex; "></i>
+                                        <span v-else>-</span>
+                                    </button>
+                                    <input class="number" type="number" pattern="[0-9]*" v-model.number="RAMtools.getRAM.cartList[RAMtools.getRAM.cartList.findIndex(e => e.med_id == i.med_id)].amount" @input="RAMtools.changeAmount(i)">
+                                    <button class="minus" @click="RAMtools.changeAmount(i, true);">+</button>
+                                </div>
+                            </div>
+                            <div class="price">{{i.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}} <div class="t-sym">₸</div></div>
+                            <div class="close" @click="RAMtools.getRAM.cartList.splice(ind, 1); RAMtools.updateRAM()">
+                                <i class="fa-solid fa-xmark"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="alert"><i class="fa-solid fa-parachute-box"></i> При заказе товаров на сумму от 15000тг доставка по городу Бесплатно !</div>
-
+                </template>
+                <div class="alert"><i class="fa-solid fa-parachute-box"></i> При заказе товаров на сумму от 14990 тг доставка по городу бесплатно!</div>
                 <div class="cart-actions">
                     <router-link class="go-shop" to="/search"><i class="fa-solid fa-plus"></i> Добавить позиции</router-link>
-                    <button class="clear-cart"><i class="fa-regular fa-trash-can"></i> Очистить корзину</button>
+                    <button class="clear-cart" @click="RAMtools.getRAM.cartList.splice(ind, RAMtools.getRAM.cartList.length); RAMtools.updateRAM()"><i class="fa-regular fa-trash-can"></i> Очистить корзину</button>
                 </div>
             </div>
             <div class="sidebar">
@@ -61,7 +62,7 @@
                     <ul class="recipt">
                         <li>
                             <span>Сумма:</span>
-                            <span class="sum">1 234₸</span>
+                            <span class="sum">{{RAMtools.getProductsSum().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}}₸</span>
                         </li>
                         <li>
                             <span>Скидки / Промокоды:</span>
@@ -69,7 +70,7 @@
                         </li>
                         <li class="total">
                             <span>Итого:</span>
-                            <span class="sum">1 234₸</span>
+                            <span class="sum">{{RAMtools.getProductsSum().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}}₸</span>
                         </li>
                     </ul>
                     <router-link to="/cart/checkout" class="order-button ob-1">Оформить заказ</router-link>
@@ -77,22 +78,17 @@
             </div>
         </div>
     </div>
-    
-            
-    <div class="fullscreen blackout">
+    <div class="fullscreen blackout" v-if="false">
         <div class="modal">
             <span class="close"><i class="fa-solid fa-xmark"></i></span>
             <div class="top">Авторизация</div>
             <div id="auth">
-                
                 <div class="unsign-continue">
                     <div class="title">Продолжить без регистрации</div>
                     <div class="text" style="padding: 0;">Отлично подходит для одноразовых заказов</div>
                     <router-link to="/cart/checkout" class="order-button ob-2">Продолжить без регистрации</router-link>
                 </div>
-
                 <div class="split"><span>или</span></div>
-
                 <div class="form">
                     <div class="auth-title">Войти</div>
                     <div class="text">Авторизуйтесь для получения персональных <span>скидок и уникальных предложений</span></div>
@@ -131,17 +127,60 @@
                         <span class="switch">Уже есть Аккаунт ? Войти</span>
                     </div>
                 </div>
-                
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { inject } from '@vue/runtime-core';
+
 export default {
-    data(){
-        
-    }
+    components: {
+    }, 
+    setup() {
+        window.scrollTo(0, 0);
+    },
+    data() {
+        return {
+            ready: false,
+            med_id: this.$route.params.id,
+            data: null,
+            serverQuery: Function,
+            landyshTools: Object,
+            RAMtools: Object,
+            recentItems: [],
+            recentItemsLoading: true
+        }
+    },
+    mounted() {
+        this.serverQuery = inject('serverQuery');
+        this.landyshTools = inject('landyshTools');
+        this.RAMtools = inject('RAM');
+        this.ready = true;
+
+        this.init();
+    },
+    methods: {
+        async init() {
+            let recentProducts = [];
+            if (localStorage.getItem('recentProducts')) {
+                recentProducts = JSON.parse(localStorage.getItem('recentProducts'));
+            }
+            if (recentProducts.length <= 0) {
+                this.recentItemsLoading = false;
+                return;
+            }
+            let hotObj = (await this.serverQuery('getByMedId', {list: JSON.stringify(recentProducts)})).data.message;
+            this.recentItems.splice(0, this.recentItems.length);
+            for(let i of hotObj) {
+                this.landyshTools.parseItem(i);
+                this.recentItems.push(i);
+            }
+            this.recentItemsLoading = false;
+            console.log('recentItems', this.recentItems);
+        }
+    },
 }
 </script>
 
@@ -265,6 +304,10 @@ export default {
 #cart-items .item .image{
     width: 90px;
     height: 90px;
+    min-height: 90px;
+    min-width: 90px;
+    max-height: 90px;
+    max-width: 90px;
     padding: 10px;
     box-sizing: border-box;
     object-fit: contain;

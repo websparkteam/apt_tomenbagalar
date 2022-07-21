@@ -18,7 +18,7 @@
                 </div>
                 <ProductsSection />
                 <div class="pad-top-32 show-more-block">
-                    <span>Переидите в каталог товаров для большего просмотра</span>
+                    <span>Перейдите в каталог всех товаров</span>
                     <router-link to="/search" class="show-more-button">Все товары <i class="fa-solid fa-arrow-right-long"></i></router-link>
                 </div>
             </section>

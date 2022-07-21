@@ -1,11 +1,17 @@
 <template>
     <div class="flex-centered">
         <div class="container">
-            <div class="loading-template" v-if="!data"></div>
+            <template v-if="!data">
+            <!-- <template v-if="true"> -->
+                <div class="loading-template"></div>
+                <div class="loading-template"></div>
+                <div class="loading-template"></div>
+            </template>
             <template v-else>
                 <div class="path">
                     <router-link class="pathlink" to="/">Главная</router-link>
                     <router-link class="pathlink" to="/search">Каталог</router-link>
+                    <router-link class="pathlink" v-for="(i, ind) in catpath" :key="ind" :to="{path: '/search', query: {cat: i.id}}">{{i.name}}</router-link>
                     <span class="pathlink">{{data.name}}</span>
                 </div>
 
@@ -53,7 +59,7 @@
                         <div class="mini-title">Поделиться</div>
                         <div class="share-wrap">
                              <button @click="clipboard(data.med_id)"><i class="fa-regular fa-copy"></i>Артикул：{{data.med_id}}</button>
-                            <button @click="clipboard(`landysh.kz/product/${data.med_id}`)"><i class="fa-solid fa-link"></i>Скопировать ссылку</button>
+                            <button @click="clipboard(`tomenbagalar.kz/product/${data.med_id}`)"><i class="fa-solid fa-link"></i>Скопировать ссылку</button>
                             <div v-if="successClipboard" class="successClipboard">Успешно скопировано!</div>
                         </div>
                     </div>
@@ -75,11 +81,11 @@
                         <h2 class="page-header">Наличие в аптеках</h2>
                     </div>
                     <div class="pharmacy-list">
-                        <div class="item" v-for="i,ind in 5" :key="ind">
-                            <div class="adress">Ландыш на Бокейхан, 32</div>
-                            <div class="schedule">Ежедневно 9:00-23:00</div>
-                            <div class="stock"><div class="indicator"></div>Наличие: 5шт</div>
-                            <div class="price">1 925₸</div>
+                        <div class="item" v-for="(i,ind) in data.stock_data" :key="ind">
+                            <div class="address">{{getPharmaDataById(i.pharma).address}}</div>
+                            <div class="schedule">{{getPharmaDataById(i.pharma).time}}</div>
+                            <div class="stock"><div class="indicator"></div>В наличии {{(i.qtty)}} шт.</div>
+                            <div class="price">{{(i.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}}₸</div>
 
                             <!-- 
                                 INDICATOR COLORS 
@@ -96,10 +102,10 @@
                         <h2 class="page-header">Описание</h2>
                     </div>
                     <ul class="description-list minimized">
-                        <li v-for="(i, ind) in 10" :key="ind"><span>Тип</span><span class="val">профилактическое средство</span></li>
+                        <li v-for="(i, ind) in data.specs" :key="ind" v-show="i.length > 0"><span class="val">{{ind}}</span><span>{{i}}</span></li>
                     </ul>
                     <div class="description pad-top-16">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error similique odit aut, repellat nulla assumenda quos necessitatibus earum ut incidunt corrupti nobis sunt laudantium dolorum non iusto distinctio in atque.
+                        
                     </div>
                 </section>
             </template>
@@ -109,6 +115,7 @@
 <script>
 import { inject } from '@vue/runtime-core';
 import pharmacies from '../assets/documents/pharmacies';
+import cats from '../assets/scripts/getCategories'
 export default {
     components: {  },
     setup() {
@@ -123,7 +130,8 @@ export default {
             landyshTools: Object,
             RAMtools: Object,
             successClipboard: false,
-            requestAvailability: false
+            requestAvailability: false,
+            catpath: [],
         }
     },
     mounted() {
@@ -149,6 +157,13 @@ export default {
             recentProducts.splice(10, recentProducts.length);
             recentProducts.unshift(this.med_id);
             localStorage.setItem('recentProducts', JSON.stringify(recentProducts));
+
+            let b = {el: -1};
+            this.recursiveCatSearch(b, cats, this.data.rauzacat);
+            if (b.el == -1) {
+                b.el = {id: -1};
+            }
+            this.getCatParents(b.el);
         },
         clipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
@@ -172,6 +187,42 @@ export default {
                 case 1: return {text: 'малый запас', color: '#f44336'};
                 default: return {text: 'нет в наличии', color: '#8e8e8e'};
             }
+        },
+        recursiveCatSearch(cat, cats, value) {
+            if (!cats) return null;
+            for(let i in cats) {
+                if (cats[i].id == value) return cat.el = cats[i];
+                let ind = cats[i].subcats.findIndex(j => j.id == value);
+                if (ind == -1) this.recursiveCatSearch(cat, cats[i].subcats, value);
+                else {
+                    cat.el = cats[i].subcats[ind];
+                }
+            }
+		},
+        async getCatParents(subcat) {
+            let a = true,
+                i = subcat,
+                his = [];
+            his.push(subcat);
+            
+            while(a) {
+                let b = {el: -1};
+                this.recursiveCatSearch(b, cats, i.parent_category);
+                if (b.el == -1) {
+                    break;
+                }
+                else {
+                    his.push(b.el);
+                    i = b.el;
+                }
+            }
+            this.catpath.splice(0, this.catpath.length);
+            his.forEach(e => this.catpath.unshift(
+                {
+                    id: e.id,
+                    name: e.name,
+                }
+            ));
         },
     },
     computed: {
@@ -214,12 +265,20 @@ export default {
     border-radius: 4px;
 }
 .loading-template {
-    height: 435px;
+    width: 100%;
+    height: 460px;
     border-radius: 10px;
 	background: linear-gradient(270deg, #a1a1a1, #dadada, #a1a1a1);
 	background-size: 400% 400%;
 	animation: flicker-loading 1s infinite;
 	opacity: 0.3;
+    margin-bottom: 20px;
+}
+.loading-template:nth-child(2) {
+    height: 187px;
+}
+.loading-template:nth-child(3) {
+    height: 400px;
 }
 .successClipboard {
     position: absolute;
@@ -446,7 +505,7 @@ export default {
     border-right: 1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border);
 }
-.pharmacy-list .adress{
+.pharmacy-list .address{
     font-weight: 500;
     color: #131313;
     font-size: 14px;

@@ -1,7 +1,7 @@
 <template>
     <SiteHeader v-if="ready"/>
 
-    <div id="content">
+    <div id="content" v-if="ready">
         <router-view :key="$route.fullPath"/>
     </div>
 
@@ -405,6 +405,7 @@ section{
     font-family: var(--font-primary);
     color: #2e2f38;
     outline: none;
+    resize: none;
 }
 .input-group textarea{height: 80px; border-radius: 12px;}
 

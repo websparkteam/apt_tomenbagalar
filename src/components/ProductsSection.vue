@@ -32,10 +32,10 @@ export default {
 
         this.sync();
 
-        window.addEventListener('scroll', this.listScroll);
+        // window.addEventListener('scroll', this.listScroll);
     },
     beforeUnmount() {
-        window.removeEventListener('scroll', this.listScroll);
+        // window.removeEventListener('scroll', this.listScroll);
     },
     methods: {
         async sync() {
@@ -86,6 +86,17 @@ export default {
     gap: 15px;
     justify-content: space-between;
     place-items: center;
+}
+.itemloading {
+    width: 100%;
+    height: 400px;
+    flex-shrink: 0;
+    border: 1px solid rgb(166, 57, 254, 0) !important;
+    background: linear-gradient(270deg, #cccccc, #e9e9e9, #cccccc);
+    background-size: 400% 400%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    animation: flicker-loading 2s infinite !important;
 }
 @media screen and (max-width: 480px){
     .products-list{

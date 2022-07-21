@@ -2,12 +2,14 @@
     <header class="flex-centered" v-if="ready">
         <div class="container">
             <div class="container-unit">
-                <div class="element menu-icon">
+                <div class="element menu-icon" @click="toggleMenu=!toggleMenu">
                     <span class="icon"><i class="fa-solid fa-bars-staggered" style="background: #fff !important;"></i></span>
                 </div>
-                <router-link to="/"><img class="logo" src="../assets/logo.png" alt="Аптека Низких Цен"></router-link>
-                <div class="name">Аптека<br><span>Низких Цен</span></div>
-                <div class="nav-menu">
+                <router-link to="/" style="display: flex; flex-direction: row; align-items: center;">
+                    <img class="logo" src="../assets/logo.png" alt="Аптека Низких Цен">
+                    <div class="name">Аптека<br><span>Низких Цен</span></div>
+                </router-link>
+                <div class="nav-menu" v-if="toggleMenu">
                     <router-link to="#" class="item">О Нас</router-link>
                     <router-link to="#" class="item">Аптеки</router-link>
                     <router-link to="#" class="item">Доставка</router-link>
@@ -44,7 +46,7 @@
                                     <!-- <button ref="itemButton1" class="addtocart" v-if="RAMtools.getRAM.cartList.findIndex(e=>e.id==i.id) == -1" @click="RAMtools.tileAddToCart(i)"><i class="fa-solid fa-cart-plus"></i></button> -->
                                     <!-- <div ref="itemButton2" class="addedtocart" v-else @click="RAMtools.changeAmount(i, false);"><i class="fa-solid fa-check"></i></div> -->
                                 </div>
-                                <router-link to="#" class="item show-more">Показать больше</router-link>
+                                <router-link :to="{path: '/search', query: {name: inputs.searchInput}}" class="item show-more">Показать больше</router-link>
                             </div>
                         </template>
                     </div>
@@ -53,8 +55,9 @@
                     <span class="icon"><i class="ws-icon-user"></i></span>
                 </router-link>
                 <router-link to="/cart" class="element cart">
-                    <span class="icon"><i class="ws-icon-cart"></i><span class="qtty">0</span></span>
-                    <span class="value">Корзина</span><!-- Сумма писать в место текста Корзина -->
+                    <span class="icon"><i class="ws-icon-cart"></i><span class="qtty">{{RAMtools.getRAM.cartList.length}}</span></span>
+                     <span v-if="RAMtools.getRAM.cartList.length == 0" class="value">Корзина</span>
+                    <span v-else class="value">{{RAMtools.getProductsSum().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}} ₸</span>
                 </router-link>
             </div>
         </div>
@@ -95,7 +98,8 @@ export default {
             searchHistory: [],
             modalCatalog: false,
             modalSelectedCat: 0,
-            stockRequests: {}
+            stockRequests: {},
+            toggleMenu: window.innerWidth > 1024 ? true: false
         }
     },
     mounted() {
@@ -111,11 +115,17 @@ export default {
             this.searchHistory.splice(5, this.searchHistory.length);
         }
         this.searchHistory.splice(0, this.searchHistory.length);
+
+        window.addEventListener('resize', this.windowResize);
     },
     unmounted() {
         document.removeEventListener('click', this.windowClick);
+        window.removeEventListener('resize', this.windowResize);
     },
     methods: {
+        windowResize() {
+            this.toggleMenu = window.innerWidth > 1024 ? true: false;
+        },
         addToHistory(text) {
             let hist = text;
             if (!text) hist = this.inputs.searchInput;
@@ -211,6 +221,7 @@ header .container-unit{
 header .menu-icon{display: none !important;}
 header .logo{
     height: 50px;
+    margin-right: 10px;
 }
 header .name{
     font-family: var(--font-secondary);
@@ -280,6 +291,7 @@ header .element.cart .qtty{
     font-size: 14px;
 }
 header .element .value{
+    width: 106px;
     display: flex;
     align-items: center;
     padding: 10px 12px;
