@@ -120,6 +120,31 @@
                             </label>
                         </div>
                     </div>
+
+                    <div class="uniq-padding">
+                        <div class="pharmacy-chosen">
+                            <i class="fa-solid fa-parachute-box"></i>
+                            <template v-if="true">Вам привезут из Бокейхана, 82</template>
+                            <template v-else>Оператор самостоятельно подберет для Вас аптеку</template>
+                        </div>
+                        <div class="alert-box">
+                            <div class="alert-text">
+                                <span><i class="fa-solid fa-boxes-stacked"></i> Узнайте наличие в аптеках</span>
+                            </div>
+                            <div class="in-pharmacy">
+                                <div class="item">
+                                    <div class="group">
+                                        <span class="name">терафлю</span>
+                                        <span class="schedue">Наличие: 10</span>
+                                    </div>
+                                    <div class="group">
+                                        <span v-if="true" class="inp-price">1 225<span class="t-sym">₸</span></span>
+                                        <div v-else class="miniloading"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="block">
                     <div class="page-title"><div class="num">3</div>Способ оплаты</div>
@@ -318,7 +343,81 @@ export default {
     border-top: 2px dashed var(--color-border);
     gap: 15px;
 }
+.pharmacy-chosen {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    margin-top: 0px;
+    color: #FFF;
+    background: var(--color-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+.uniq-padding{
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+.alert-box{
+    width: 100%;
+    color: var(--color-text-gray);
+    padding: 8px 12px;
+    box-sizing: border-box;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+}
+.alert-box .alert-text{
+    padding-bottom: 8px;
+    color: var(--color-text-gray);
+    font-size: 12px;
+}
+.alert-box .alert-text i{
+    margin-right: 15px;
+    color: var(--color-text-gray);
+    font-size: 12px;
+}
+
+.alert-box .alert-text a{color: #6faee5 !important;}
+
+.in-pharmacy{
+    display: flex;
+    flex-direction: column;
+}
+.in-pharmacy .item{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+    border-bottom: 1px solid var(--color-border);
+}
+.in-pharmacy .group{
+    display: flex;
+    flex-direction: column;
+}
+.in-pharmacy .name{
+    font-weight: 600;
+}
+.in-pharmacy .schedue{font-size: 12px;}
+
+.in-pharmacy .inp-price{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-primary);
+    font-weight: 600;
+}
+.in-pharmacy .inp-price .t-sym{
+    font-size: 14px;
+    color: var(--color-text-gray);
+    margin-left: 5px;
+    font-weight: 400;
+}
 @media screen and (max-width: 767px){
+    .uniq-padding{padding: 0;}
     .address-fill{padding: 0;}
     .address-additions{padding: 0; padding-top: 12px;}
 }
@@ -439,7 +538,7 @@ export default {
 .order-radio.iconed label{
     padding-right: 70px;
 }
-.delivery-radio label .icon{
+.order-radio label .icon{
     position: absolute;
     top: 50%;
     right: 10px;
@@ -447,14 +546,14 @@ export default {
     width: 45px;
     height: 45px;
 }
-.delivery-radio label .icon.i1{
-    /* background: url("../assets/bycicle.svg"); */
+.order-radio label .icon.i1{
+    background: url("../assets/hatchback.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
 }
-.delivery-radio label .icon.i2{
-    /* background: url("../assets/delivery-truck.svg"); */
+.order-radio label .icon.i2{
+    background: url("../assets/small-plane.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
