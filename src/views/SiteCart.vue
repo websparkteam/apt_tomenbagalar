@@ -189,6 +189,7 @@ export default {
     display: grid;
     grid-template-columns: 1fr 320px;
     align-items: start;
+    gap: 15px;
 }
 .alert{
     padding: 14px;

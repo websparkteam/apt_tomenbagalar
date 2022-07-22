@@ -4,6 +4,7 @@ import Search from '../views/SiteSearch.vue'
 import Cart from '../views/SiteCart.vue'
 import Checkout from '../views/SiteCheckout.vue'
 import Product from '../views/SiteProduct.vue'
+import Information from '../views/SiteInformation.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/product/:id',
     name: 'Product',
     component: Product
+  },
+  {
+    path: '/information/:mode?',
+    name: 'Information',
+    component: Information
   },
 ]
 

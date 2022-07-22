@@ -18,25 +18,24 @@
                 </div>
                 <div class="group">
                     <div class="header">Информация</div>
-                    <router-link to="#" class="link"></router-link>
-                    <router-link to="#" class="link">О Нас</router-link>
-                    <router-link to="#" class="link">Аптеки</router-link>
-                    <router-link to="#" class="link">Контакты</router-link>
-                    <router-link to="#" class="link">Вакансии</router-link>
+                    <router-link to="/information/about" class="link">О Нас</router-link>
+                    <router-link to="/information/pharmacy" class="link">Аптеки</router-link>
+                    <router-link to="/information/contacts" class="link">Контакты</router-link>
+                    <router-link to="/information/career" class="link">Вакансии</router-link>
                 </div>
                 <div class="group">
                     <div class="header">Покупателям</div>
-                    <router-link to="#" class="link">Личный кабинет</router-link>
-                    <router-link to="#" class="link">Как сделать заказ</router-link>
-                    <router-link to="#" class="link">Способы оплаты</router-link>
-                    <router-link to="#" class="link">Доставка</router-link>
-                    <router-link to="#" class="link">Возврат товара</router-link>
+                    <router-link to="/profile" class="link">Личный кабинет</router-link>
+                    <router-link to="/information/howtomakeorder" class="link">Как сделать заказ</router-link>
+                    <router-link to="/information/payment" class="link">Способы оплаты</router-link>
+                    <router-link to="/information/delivery" class="link">Доставка</router-link>
+                    <router-link to="/information/moneyback" class="link">Возврат товара</router-link>
                 </div>
                 <div class="group">
                     <div class="header">Документы</div>
-                    <router-link to="#" class="link">Политика Конфиденциальности</router-link>
-                    <router-link to="#" class="link">Договор оферты</router-link>
-                    <router-link to="#" class="link">Лицензия</router-link>
+                    <router-link to="/information/politics" class="link">Политика Конфиденциальности</router-link>
+                    <router-link to="/information/publicterms" class="link">Договор оферты</router-link>
+                    <router-link to="/information/license" class="link">Лицензия</router-link>
                 </div>
             </div>
         </div>

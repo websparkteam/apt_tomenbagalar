@@ -10,11 +10,11 @@
                     <div class="name">Аптека<br><span>Низких Цен</span></div>
                 </router-link>
                 <div class="nav-menu" v-if="toggleMenu">
-                    <router-link to="#" class="item">О Нас</router-link>
-                    <router-link to="#" class="item">Аптеки</router-link>
-                    <router-link to="#" class="item">Доставка</router-link>
-                    <router-link to="#" class="item">Акции</router-link>
-                    <router-link to="#" class="item">Контакты</router-link>
+                    <router-link to="/information/about" class="item">О Нас</router-link>
+                    <router-link to="/information/pharmacy" class="item">Аптеки</router-link>
+                    <router-link to="/information/delivery" class="item">Доставка</router-link>
+                    <router-link to="/search?discount=1" class="item">Акции</router-link>
+                    <router-link to="/information/contacts" class="item">Контакты</router-link>
                 </div>
             </div>
             <div class="container-unit">

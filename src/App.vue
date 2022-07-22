@@ -365,12 +365,6 @@ a:hover{color: var(--color-main) !important;}
     .adaptive-padding {padding: 0 0;}
 }
 
-.container-grid{
-    display: grid;
-    grid-template-columns: 1fr 280px;
-    gap: 10px;
-}
-
 section{
     width: 100%;
 }
