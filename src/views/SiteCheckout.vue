@@ -351,8 +351,6 @@ export default {
     margin-top: 0px;
     color: #FFF;
     background: var(--color-main);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     font-weight: 700;
 }
 .uniq-padding{
