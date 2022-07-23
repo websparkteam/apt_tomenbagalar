@@ -51,7 +51,7 @@
                         </template>
                     </div>
                 </div>
-                <router-link to="#" class="element user">
+                <router-link to="/profile" class="element user">
                     <span class="icon"><i class="ws-icon-user"></i></span>
                 </router-link>
                 <router-link to="/cart" class="element cart">

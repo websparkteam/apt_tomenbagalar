@@ -5,6 +5,7 @@ import Cart from '../views/SiteCart.vue'
 import Checkout from '../views/SiteCheckout.vue'
 import Product from '../views/SiteProduct.vue'
 import Information from '../views/SiteInformation.vue'
+import Profile from '../views/SiteProfile.vue'
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: '/information/:mode?',
     name: 'Information',
     component: Information
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
   },
 ]
 
