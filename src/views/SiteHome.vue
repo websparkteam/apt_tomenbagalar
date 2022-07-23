@@ -1,16 +1,18 @@
 <template>
     <div class="flex-centered">
         <div class="container">
-            <carousel :autoplay="9000" :wrap-around="true" :items-to-show="1">
-                <slide v-for="(i, ind) in main_banners" :key="ind" @mousedown="adMousedown" @mouseup="adClick($event, i)" :style="{cursor: i.url ? 'pointer' : 'unset'}">
-                    <img :src="i.image" alt="Banner">
-                </slide>
+            <section style="margin-top: 20px;">
+                <carousel :autoplay="9000" :wrap-around="true" :items-to-show="1">
+                    <slide v-for="(i, ind) in main_banners" :key="ind" @mousedown="adMousedown" @mouseup="adClick($event, i)" :style="{cursor: i.url ? 'pointer' : 'unset'}">
+                        <img :src="i.image" alt="Banner">
+                    </slide>
 
-                <template #addons>
-                    <navigation />
-                    <pagination />
-                </template>
-            </carousel>
+                    <template #addons>
+                        <navigation />
+                        <pagination />
+                    </template>
+                </carousel>
+            </section>
             <section>
                 <div class="pad-32">
                     <h2 class="page-header">Каталог товаров</h2>

@@ -181,11 +181,8 @@ export default {
 </script>
 <style>
 body{padding-top: 74px;}
-@media screen and (max-width: 1024px){
-    body{padding-top: calc(74px + 20px);}
-}
 @media screen and (max-width: 767px){
-    body{padding-top: calc(124px + 20px);}
+    body{padding-top: 124px;}
 }
 </style>
 
@@ -516,7 +513,6 @@ header #search{
 #populars{
     background-color: #fff;
     border-bottom: 1px solid #eaeaea;
-    margin-bottom: 20px;
 }
 #populars .wrap{
     width: 100%;

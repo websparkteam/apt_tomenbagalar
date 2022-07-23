@@ -272,7 +272,7 @@ a:hover{color: var(--color-main) !important;}
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    padding-bottom: 20px;
+    padding: 20px 0;
 }
 .path .pathlink{
     display: flex;
@@ -280,7 +280,8 @@ a:hover{color: var(--color-main) !important;}
     font-weight: 500;
     font-size: 14px;
 }
-.path a.pathlink{color: #000;}
+.path a.pathlink{color: #000 !important;}
+.path a.pathlink:hover{color: var(--color-main) !important;}
 .path .pathlink::after{
     content: '\f105';
     display: flex;

@@ -10,7 +10,7 @@
                 <h2 class="page-header">Оформление заказа</h2>
             </div>
         </div>
-        <div class="container" style="max-width: 820px; box-shadow: var(--box-shadow);">
+        <div class="container" style="box-shadow: var(--box-shadow);">
             <div class="content">    
                 <div class="block">
                     <div class="page-title"><div class="num">1</div>Тип получения</div>
