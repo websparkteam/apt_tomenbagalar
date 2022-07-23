@@ -99,7 +99,7 @@
 export default {
     data() {
         return {
-            mode: 'profile',
+            mode: 'myorders',
         }
     }
 }
