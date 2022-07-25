@@ -55,7 +55,7 @@
                 <div v-if="mode=='politics'" class="landysh-document" v-html="politics"></div>
                 <div v-if="mode=='publicterms'" class="landysh-document" v-html="publicterms"></div>
                 <div v-if="mode=='license'" class="landysh-document">
-                    <div class="row" style="display: flex; justify-content: center;"><img class="license" src="../assets/cart.png" style="width:80%;margin-top: 14px;" alt="license"></div>
+                    <div class="row" style="display: flex; justify-content: center;"><img class="license" src="../assets/licence.jpg" style="width:80%;margin-top: 14px;" alt="license"></div>
                 </div>
             </div>
         </div>
