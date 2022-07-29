@@ -60,34 +60,39 @@
                 </div>
 
                 <div class="profile">
-                    <div class="alert-area">
-                        <span>Заполните поля</span>
+                    <div class="alert-area" v-if="info">
+                        <span>{{info}}</span>
                     </div>
                     <div class="input-group">
                         <label>Имя и Фамилия</label>
-                        <input type="text" autocomplete="name" placeholder="Ивонов Иван">
+                        <input type="text" autocomplete="name" placeholder="Ивонов Иван" v-model="RAMtools.client.fullname">
                     </div>
                     <div class="input-group">
                         <label>Номер телефона</label>
-                        <input type="num" disabled autocomplete="off" value="+7 (707) 801 0208">
+                        <input type="num" autocomplete="off" v-model="RAMtools.client.phone" disabled>
                     </div>
                     <div class="input-group">
                         <label>Адрес электронной почты</label>
-                        <input type="email" autocomplete="email" placeholder="example@gmail.com">
+                        <input type="email" autocomplete="email" v-model="RAMtools.client.email" placeholder="example@gmail.com">
                     </div>
                     <div class="input-group">
                         <label>Адрес доставки</label>
-                        <textarea autocomplete="adress" placeholder="ул. Туркестан 8/2"></textarea>
+                        <textarea autocomplete="adress" v-model="RAMtools.client.address" placeholder="ул. Туркестан 8/2"></textarea>
                     </div>
                     <div class="input-group" style="border: none;">
                         <div></div>
-                        <div><div class="do-save">Сохранить мои данные</div></div>
+                        <div><div class="do-save" @click="saveChanges">
+                            <div v-if="loading" class="landysh-loading"></div>
+                            <template v-else>
+                            Сохранить мои данные
+                            </template>
+                            </div></div>
                         <div></div>
                     </div>
                 </div>
 
                 <div class="leave">
-                    <button><i class="fa-solid fa-door-open"></i> Выйти</button>
+                    <button @click="logout"><i class="fa-solid fa-door-open"></i> Выйти</button>
                 </div>
             </template>
         </div>
@@ -96,10 +101,137 @@
 </template>
 
 <script>
+import { inject } from '@vue/runtime-core';
+// import Auth from '../components/Auth.vue';
 export default {
+    components: {
+        // Auth
+    },
     data() {
         return {
             mode: 'myorders',
+            serverQuery: Function,
+            RAMtools: Object,
+            landyshTools: Object,
+            loading: false,
+            info: '',
+            orders: [],
+            ordersLoading: false,
+            offset: 0,
+            emptyResult: false,
+            authorized: false,
+            modal: false,
+            authData: {
+                phone: '+7 (',
+                pin: ['','','',''],
+            },
+        }
+    },
+    mounted() {
+        this.serverQuery = inject('serverQuery');
+        this.RAMtools = inject('RAM');
+        this.landyshTools = inject('landyshTools');
+
+        this.orders.splice(0, this.orders.length);
+        this.getOrders();
+
+        window.addEventListener('scroll', this.listScroll);
+
+        if (!this.RAMtools.client) {
+            this.$router.replace('/cart?auth');
+        }
+    },
+    unmounted() {
+        window.removeEventListener('scroll', this.listScroll);
+    },
+    methods: {
+        logout() {
+            this.landyshTools.setClient(null);
+            localStorage.removeItem('landyshAuth');
+            this.$router.replace('/cart?auth');
+        },
+        listScroll(e) {
+            console.log(e);
+            let scrollBottom = document.documentElement.scrollTop+window.innerHeight;
+            let scrollHeight = Math.max(
+                document.body.scrollHeight, document.documentElement.scrollHeight,
+            );
+            let a = window.innerWidth < 500 ? 400 : 100;
+            if(scrollBottom > (scrollHeight-a)) {
+                this.getOrders();
+            }
+        },
+        async getOrders() {
+            if (this.ordersLoading || this.emptyResult) return;
+            this.ordersLoading = true;
+            let state = (await this.serverQuery('userGetOrders', {auth: localStorage.getItem('landyshAuth'), offset: this.offset})),
+                orders = state.data.message;
+            for(let i in orders) {
+                this.parseOrder(orders[i]);
+                this.orders.push(orders[i]);
+            }
+            this.ordersLoading = false;
+            if(Object.keys(orders).length <= 0) {
+                this.emptyResult = true;
+                return;
+            }
+            this.offset += 20;
+        },
+        havePaidOnes(receipts) {
+            let has = false;
+            for(let i in receipts) {
+                if (receipts[i].code == 'ok') {
+                    has = true;
+                    break;
+                }
+            }
+            return has;
+        },
+        async saveChanges() {
+            if (this.loading) return;
+            this.loading = true;
+            let state = (await this.serverQuery('userUpdate', {auth: localStorage.getItem('landyshAuth'), fullname: this.RAMtools.client.fullname, email: this.RAMtools.client.email, address: this.RAMtools.client.address}));
+            this.loading = false;
+            if (!state.status) {
+                this.info = 'Произошла ошибка при сохранении.';
+                return;
+            }
+            this.info = 'Успешно сохранено.';
+        },
+        parseOrder(order) {
+            order.cart = JSON.parse(order.cart);
+            order.extra_info = JSON.parse(order.extra_info);
+        },
+        parseState(state) {
+            switch(parseInt(state)) {
+                case -1: return 'Отменен';
+                case 0: return 'У оператора';
+                case 1: return 'Ожидание принятия';
+                case 2: return 'Принята кассой';
+                case 3: return 'Внесены изменения';
+                case 4: return 'Готово к самовывозу';
+                case 5: return 'Завершен';
+            }
+        },
+        getOrderTotalPrice(cart) {
+            let total = 0;
+            cart.forEach((e) => total+=(parseInt(e.price)*e.amount));
+            return total;
+        },
+        async payOnline(order) {
+            let paymentRes = await this.serverQuery('openPayment', {orderid: order.id});
+            document.location.href = paymentRes.data.message.url;
+        }
+    },
+    watch: {
+        'RAMtools.client': {
+            deep: true,
+            handler() {
+                if (this.RAMtools.client) {
+                    this.authorized = true;
+                    this.authData.phone = this.RAMtools.client.phone;
+                }
+            }
         }
     }
 }
@@ -216,7 +348,7 @@ table.myorders .order ul li{
     gap: 10px;
 }
 .profile .alert-area span{
-    color: var(--color-error);
+    color: var(--color-main);
     font-size: 14px;
 }
 @media screen and (max-width: 767px){

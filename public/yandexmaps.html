@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../src/assets/styles/fonts.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=7434ce66-4079-43ef-a658-dface1b12096&lang=ru_RU" type="text/javascript">
+    </script>
+    <title>Document</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #2c3e50;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        input {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-sizing: border-box;
+            margin-top: 0px;
+            margin-bottom: 10px;
+            outline: none;
+            font-family: 'Open Sans', sans-serif;
+        }
+        /* input:focus{border-color: #11d3a1; background: #E8F0FE;} */
+        .rauza-map {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+        label {
+            font-family: 'Open Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .req-tag{
+            color: #0fbd90;
+            font-size: 12px;
+            padding-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="rauza-map">
+        <div class="input-group">
+            <div class="landysh-input">
+                <input type="text" id="suggest" placeholder="г.Нур-Султан, ​улица Туркестан, 8/2">
+            </div>
+        </div>
+        <div id="map"></div>
+    </div>
+    <script type="text/javascript">
+        ymaps.ready(init);
+        switch(localStorage.getItem('rauzalang')) {
+            case 'kz': $('.addresslabel').text('Жеткізу мекен-жайы'); break;
+            case 'en': $('.addresslabel').text('Delivery address'); break;
+            case 'ru': default: $('.addresslabel').text('Адрес доставки'); break;
+        }
+        let myMap,
+            myPlacemark,
+            suggestView,
+            boundPolygon;
+        let boundCoords = [[[43.253970723628385,76.82215329452215],[43.20040279364547,76.84504285021401],[43.20730946910362,76.86169400377838],[43.1947512916123,76.87362446947688],[43.19431170824776,76.89448132677684],[43.201909771820766,76.9124199406682],[43.20837679414386,76.91568150683024],[43.22469824517799,76.93971409960412],[43.22683226347804,76.94452061815862],[43.22833858403713,76.96812405748922],[43.234489003899135,76.96941151781704],[43.24503112649871,76.97765126391032],[43.25124258850932,76.98159947558028],[43.2579552695008,76.9833160893497],[43.26184451935204,76.98314442797285],[43.26598441360841,76.98554768724975],[43.2698104273843,76.98700680895445],[43.274827783256505,76.98477521105374],[43.276960033356076,76.98451771898883],[43.28881146366216,76.99009671373913],[43.29658574205039,76.99928059740664],[43.298215705747765,76.98838009996972],[43.29451687860377,76.97430386705975],[43.29388993629156,76.95851102038012],[43.295582665595504,76.94889798327101],[43.2938272417026,76.93430676622928],[43.29068689466443,76.92656302409443],[43.28241020712662,76.91514754252702],[43.26798599633659,76.87231802897725],[43.25895343333766,76.84528136210712],[43.253970723628385,76.82215329452215]]];
+        const startPoints = [
+            {
+                value: '1',
+                coords: [51.11564978425806,71.42957597983165],
+                name: 'АНЦ на Туркестан, 8/22'
+            },
+        ]
+        function init(){
+            myMap = new ymaps.Map("map", {
+                center: [51.09470639755518,71.42909863483106],
+                zoom: 13
+            });
+            myMap.controls.remove('searchControl');
+            createSuggestView();
+
+            updateBounds();
+            myMap.geoObjects.events.add('click', mapclick);
+            myMap.events.add('click', mapclick);
+            window.parent.postMessage({type: 'map_ready'});
+        }
+        function mapclick(e) {
+            let coords = e.get('coords');
+            placemarkUpdate(coords);
+        }
+        function updateBounds() {
+            boundPolygon = new ymaps.Polygon(boundCoords, {}, {
+                visible: true,
+                zIndexActive: -10,
+                fillOpacity: 0,
+                fillColor: '#1F997E',
+                outline: true,
+                strokeWidth: 4,
+                strokeOpacity: 1,
+                strokeColor: '#1F997E'
+            });
+            myMap.geoObjects.add(boundPolygon);
+        }
+        function placemarkUpdate(coords) {
+            // Если метка уже создана – просто передвигаем ее.
+            if (myPlacemark) {
+                myPlacemark.geometry.setCoordinates(coords);
+            }
+            // Если нет – создаем.
+            else {
+                myPlacemark = createPlacemark(coords);
+                myMap.geoObjects.add(myPlacemark);
+                // Слушаем событие окончания перетаскивания на метке.
+                myPlacemark.events.add('dragend', function () {
+                    getAddress(myPlacemark.geometry.getCoordinates());
+                });
+            }
+            getAddress(coords);
+        }
+        function geocode() {
+            let request = $('#suggest').val();
+            ymaps.geocode(request).then((res) => {
+                let obj = res.geoObjects.get(0);
+
+                placemarkUpdate(obj.geometry.getBounds()[0]);
+
+                // Centre map
+                let mapContainer = $('#map'),
+                    bounds = obj.properties.get('boundedBy'),
+                // Рассчитываем видимую область для текущего положения пользователя.
+                    mapState = ymaps.util.bounds.getCenterAndZoom(
+                        bounds,
+                        [mapContainer.width(), mapContainer.height()]
+                    );
+                mapState.controls = [];
+                myMap.setCenter(mapState.center, mapState.zoom);
+
+            }, (e) => {
+                console.log(e)
+            })
+        }
+        function createSuggestView() {
+            suggestView = new ymaps.SuggestView('suggest', {
+                boundedBy: [[51.02130886694981,71.22802712696546],[51.26620813634614,71.63040139454354]],
+                strictBounds : true
+            });
+            suggestView.events.add('select', (e) => {
+                geocode();
+            });
+        }
+        function createPlacemark(coords) {
+            myMap.geoObjects.removeAll();
+            updateBounds();
+            return new ymaps.Placemark(coords, {
+                iconCaption: 'Поиск...'
+            }, {
+                preset: 'islands#violetDotIconWithCaption',
+                draggable: true
+            });
+        }
+        function getAddress(coords) {
+            myPlacemark.properties.set('iconCaption', 'Поиск...');
+            ymaps.geocode(coords).then(async function (res) {
+                var firstGeoObject = res.geoObjects.get(0);
+
+                if (!boundPolygon.geometry.contains(coords)) {
+                    window.parent.postMessage({type: 'rauza_outofborder'});
+                }
+                else {
+                    window.parent.postMessage({type: 'rauza_inborder'});
+                }
+                myPlacemark.properties
+                    .set({
+                        iconCaption: [
+                            firstGeoObject.getThoroughfare() || firstGeoObject.getPremise(),
+                            firstGeoObject.getAddressLine()
+                        ].filter(Boolean).join(', '),
+                        balloonContent: firstGeoObject.getAddressLine()
+                    });
+                suggestView.destroy();
+                let address = firstGeoObject.getAddressLine();
+                $('#suggest').val(address);
+
+                let chosenRoute,
+                    chosenRouteData,
+                    closest = Infinity,
+                    startPoint = '';
+                for(let i in startPoints) {
+                    let {multiRoute, route_data} = await returnRouteData(coords, startPoints[i].coords); // Возвращает роут и его дистанцию и время
+                    if (route_data.distance.value < closest) { // Подобрать самый блиэний
+                        closest = route_data.distance.value;
+                        chosenRoute = multiRoute;
+                        chosenRouteData = route_data;
+                        startPoint = startPoints[i];
+                    }
+                }
+                // console.log('Выбрано', chosenRouteData);
+                window.parent.postMessage({type: 'rauza_address', coords, address, chosenRouteData, startPoint});
+                createSuggestView();
+            });
+        }
+        function returnRouteData(address, point) {
+            return new Promise((resolve) => {
+                let multiRoute = new ymaps.multiRouter.MultiRoute({
+                    // Описание опорных точек мультимаршрута.
+                    referencePoints: [
+                        point,
+                        address,
+                    ],
+                    // Параметры маршрутизации.
+                    params: {
+                        // Ограничение на максимальное количество маршрутов, возвращаемое маршрутизатором.
+                        results: 1
+                    }
+                }, {
+                    // Автоматически устанавливать границы карты так, чтобы маршрут был виден целиком.
+                    boundsAutoApply: true
+                });
+                multiRoute.model.events.add('requestsuccess', function() {
+                    let activeRoute = multiRoute.getActiveRoute();
+                    let route_data = {
+                        distance: activeRoute.properties.get("distance"),
+                        time: activeRoute.properties.get("durationInTraffic")
+                    };
+                    resolve({multiRoute, route_data});
+                });
+                multiRoute.events.add('activeroutechange', (e) => {
+                    // if (!preloaded) return;
+                    let activeRoute = multiRoute.getActiveRoute();
+                    let route_data = {
+                        distance: activeRoute.properties.get("distance"),
+                        time: activeRoute.properties.get("durationInTraffic")
+                    };
+                });
+            });
+        }
+        window.addEventListener('message', (e) => {
+            switch(e.data.type) {
+                case 'rauza_address': {
+                    $('#suggest').val(e.data.address);
+                    geocode();
+                } break;
+                case 'rauza_error': {
+                    if (e.data.status == -1) return $('#suggest').css({border: '1px solid #ddd'});
+                    $('#suggest').css({border: '1px solid #e80000'});
+                } break;
+            }
+        });
+    </script>
+</body>
+</html>

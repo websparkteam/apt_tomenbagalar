@@ -73,70 +73,22 @@
                             <span class="sum">{{RAMtools.getProductsSum().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}}₸</span>
                         </li>
                     </ul>
-                    <router-link to="/cart/checkout" class="order-button ob-1">Оформить заказ</router-link>
+                    <router-link v-if="RAMtools.client" to="/cart/checkout" class="order-button ob-1">Оформить заказ</router-link>
+                    <a v-else @click="modal=true" href="#" class="order-button ob-1">Оформить заказ...</a>
                 </div>
             </div>
         </div>
     </div>
-    <div class="fullscreen blackout" v-if="false">
-        <div class="modal">
-            <span class="close"><i class="fa-solid fa-xmark"></i></span>
-            <div class="top">Авторизация</div>
-            <div id="auth">
-                <div class="unsign-continue">
-                    <div class="title">Продолжить без регистрации</div>
-                    <div class="text" style="padding: 0;">Отлично подходит для одноразовых заказов</div>
-                    <router-link to="/cart/checkout" class="order-button ob-2">Продолжить без регистрации</router-link>
-                </div>
-                <div class="split"><span>или</span></div>
-                <div class="form">
-                    <div class="auth-title">Войти</div>
-                    <div class="text">Авторизуйтесь для получения персональных <span>скидок и уникальных предложений</span></div>
-                    <div class="input-group">
-                        <input type="text" placeholder="+7 (___) ___-____" autocomplete="phone" value="+7">
-                    </div>
-                    <div class="input-group">
-                        <input type="password" placeholder="Пароль" autocomplete="off">
-                    </div>
-                    <div class="alert-area">
-                        <span>Заполните поля</span>
-                    </div>
-                    <button>Войти</button>
-                    
-                    <div class="switch-wrap">
-                        <span class="switch">Еще нет аккаунта ? Регистрация</span>
-                    </div>
-                </div>
-                <div class="form">
-                    <div class="auth-title">Регистрация</div>
-                    <div class="text">Следуя инструкциям пройдите не сложную процедуру регистрации</div>
-                    <div class="input-group">
-                        <input type="text" placeholder="+7 (___) ___-____" autocomplete="phone" value="+7">
-                    </div>
-                    <div class="input-group">
-                        <input type="text" placeholder="Имя и фамилия" autocomplete="name">
-                    </div>
-                    <div class="input-group">
-                        <input type="password" placeholder="Пароль" autocomplete="off">
-                    </div>
-                    <div class="alert-area">
-                        <span>Заполните поля</span>
-                    </div>
-                    <button>Регистрация</button>
-                    <div class="switch-wrap">
-                        <span class="switch">Уже есть Аккаунт ? Войти</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <CompAuth v-if="modal"/>
 </template>
 
 <script>
 import { inject } from '@vue/runtime-core';
+import CompAuth from './CompAuth.vue';
 
 export default {
     components: {
+        CompAuth
     }, 
     setup() {
         window.scrollTo(0, 0);
@@ -150,7 +102,8 @@ export default {
             landyshTools: Object,
             RAMtools: Object,
             recentItems: [],
-            recentItemsLoading: true
+            recentItemsLoading: true,
+            modal: false,
         }
     },
     mounted() {
@@ -160,6 +113,11 @@ export default {
         this.ready = true;
 
         this.init();
+
+        console.log(this.$route.query.auth);
+        if (this.$route.query.auth === null) {
+            this.modal = true;
+        }
     },
     methods: {
         async init() {
@@ -179,7 +137,7 @@ export default {
             }
             this.recentItemsLoading = false;
             console.log('recentItems', this.recentItems);
-        }
+        },
     },
 }
 </script>
