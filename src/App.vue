@@ -522,7 +522,7 @@ section{
 }
 
 .modal .category-family .title.active{
-    color: var(--color-main);
+    color: #2c3e50;
 }
 .modal .category-family .title:hover{
     color: var(--color-main);

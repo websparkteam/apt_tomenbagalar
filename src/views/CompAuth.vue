@@ -4,12 +4,14 @@
             <span class="close" @click="$parent.modal = false"><i class="fa-solid fa-xmark"></i></span>
             <div class="top">Авторизация</div>
             <div id="auth">
+                <template v-if="hideSkip">
                 <div class="unsign-continue">
                     <div class="title">Продолжить без регистрации</div>
                     <div class="text" style="padding: 0;">Отлично подходит для одноразовых заказов</div>
                     <router-link to="/cart/checkout" class="order-button ob-2">Продолжить без регистрации</router-link>
                 </div>
                 <div class="split"><span>или</span></div>
+                </template>
                 <div class="form" v-if="signup===false">
                     <div class="auth-title">Войти</div>
                     <div class="text">Авторизуйтесь для получения персональных <span>скидок и уникальных предложений</span></div>
@@ -56,6 +58,7 @@
 <script>
 import { inject } from '@vue/runtime-core';
 export default {
+    props: ['hideSkip'],
     data() {
         return {
             ready: false,

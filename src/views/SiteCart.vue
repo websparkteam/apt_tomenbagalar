@@ -51,7 +51,7 @@
                     <button class="clear-cart" @click="RAMtools.getRAM.cartList.splice(ind, RAMtools.getRAM.cartList.length); RAMtools.updateRAM()"><i class="fa-regular fa-trash-can"></i> Очистить корзину</button>
                 </div>
             </div>
-            <div class="sidebar">
+            <div class="sidebar" v-if="RAMtools.getRAM.cartList.length">
                 <div class="page">
                     <div class="title">Оформить заказ</div>
                     <ul class="adv">
@@ -79,7 +79,7 @@
             </div>
         </div>
     </div>
-    <CompAuth v-if="modal"/>
+    <CompAuth v-if="modal" :hideSkip="$route.query.auth!==null"/>
 </template>
 
 <script>

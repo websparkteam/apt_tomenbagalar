@@ -20,8 +20,8 @@
                         <div class="image">
                             <img :src="data.images.length ? data.images[0] : require('../assets/no-image.jpg')" :alt="data.name" @error="$event.target.src = require('../assets/no-image.jpg');">
                         </div>
-                        <div class="mini-title">О Товаре</div>
-                        <div class="group">
+                        <div class="mini-title" v-if="data.stock_data.length">О Товаре</div>
+                        <div class="group" v-if="data.stock_data.length">
                             <div class="price-wrap">
                                 <!-- <div class="price-old">1 905</div> -->
                                 <div class="price">{{data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}} <div class="t-sym">₸</div></div>
@@ -75,8 +75,10 @@
                         </div>
                     </div>
                 </div>
-
-                <section class="block">
+                <div class="stock no" v-if="!data.stock_data.length">
+                    <span><i class="fa-solid fa-circle-exclamation" style="margin-right: 10px;"></i>Нет в наличии</span>
+                </div>
+                <section class="block" v-else>
                     <div class="pad-bottom-16">
                         <h2 class="page-header">Наличие в аптеках</h2>
                     </div>
@@ -565,6 +567,18 @@ export default {
 }
 @media screen and (max-width: 767px){
     .description-list{grid-template-columns: 1fr;}
+}
+.stock{
+    background-color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 20px;
+    border-radius: 4px;
+    width: 100%;
+    font-family: var(--font-secondary);
+    font-size: 16px;
+    font-weight: 500;
+    color: rgb(255,103,70);
 }
 /* ===== END DESCRIPTION ===== */
 </style>

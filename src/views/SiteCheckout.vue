@@ -10,7 +10,32 @@
                 <h2 class="page-header">Оформление заказа</h2>
             </div>
         </div>
-        <div class="container" style="box-shadow: var(--box-shadow);">
+        <div class="container" v-if="orderSuccess">
+            <!-- ↓ IF SUCESS ORDER SECTION -->
+            <section class="page">
+                <div class="order-state">
+                    <span class="icon success"><i class="fas fa-check-circle"></i></span>
+                    <span class="title">Ваш заказ успешно принят</span> <!-- Number ID FORMUL = №:RANDOM_A-Z:YYMMDD  -->
+                    <span class="text" v-if="currentOrder.paymentType=='2'">Пожалуйста, не покидайте страницу. Перенаправляем на страницу оплаты...</span>
+                    <span class="text" v-else>Детали вашего заказа:</span>
+                    <td class="order-details">
+                        <ul>
+                            <li><strong>Заказ №{{currentOrder.id}}</strong></li>
+                            <li>{{new Date().toLocaleString('ru', {year: 'numeric',month: 'long',day: 'numeric',hour: '2-digit', minute:'2-digit'})}}</li>
+                            <li>Способ получения: {{currentOrder.type=='1' ? 'Доставка' : 'Самовывоз'}}</li>
+                            <li>Оплата: {{currentOrder.paymentType=='1' ? 'Наличными' : 'Онлайн оплата'}}</li>
+                        </ul>
+                    </td>
+                        
+                    <router-link to="/profile" class="button button-success">В список заказов</router-link>
+                    
+                    <div class="alert-box" v-if="!RAMtools.client"><span class="alert-text"><span><i class="fa-solid fa-info"></i>Сделайте скриншот экрана или создайте личный кабинет <router-link to="/profile">по этой ссылке</router-link></span></span></div>
+                    <div class="alert-box" v-else><span class="alert-text"><span><i class="fa-solid fa-info"></i>Вы можете отследить заказ в личном кабинете <router-link to="/profile">по этой ссылке</router-link></span></span></div>
+                    <!-- <div class="alert-box"><span class="alert-text"><span><i class="fa-solid fa-ellipsis"></i>Пожалуйста, не покидайте страницу. Перенаправляем на страницу оплаты...</span></span></div> -->
+                </div>
+            </section>
+        </div>
+        <div class="container" style="box-shadow: var(--box-shadow);" v-if="!orderSuccess">
             <div class="content">
                 <div class="block">
                     <div class="errors" style="margin-top: 10px;">
@@ -88,7 +113,8 @@
                     </template>
                     
                     <template v-if="currentOrder.type=='2'">
-                        <div class="page-subtitle">Выберите аптеку для самовывоза</div>
+                        <div class="page-title"><div class="num">2</div>Выберите аптеку для самовывоза</div>
+                        <!-- <div class="page-subtitle">Выберите аптеку для самовывоза</div> -->
                         
                         <div class="radio-wrap order-radio">
                             <div class="item" v-for="(i, ind) in pharmacies" :key="ind" @click="currentOrder.pharmacy=i.id; updateMedsStock();">
@@ -98,7 +124,7 @@
                         </div>
                     </template>
                 </div>
-                <div class="block">
+                <div class="block" v-if="currentOrder.type!='2'">
                     <div class="page-title"><div class="num">2</div>Доставка</div>
                     <div class="radio-wrap order-radio iconed delivery-radio">
                         <div class="item" @click="delivery.type='yandex'">
@@ -198,7 +224,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="block make-order-block">
+                <div class="block make-order-block" v-if="delivery.type">
                     <div class="page-title"><div class="num">5</div>Оформить заказ</div>
                     <div class="inner-block">
                         <ul class="recipt check-list">
@@ -258,7 +284,7 @@ export default {
                 },
                 coords: '',
                 type: '1',
-                pharmacy: '-1',
+                pharmacy: '1',
                 paymentType: '2',
                 cart: ''
             },
@@ -305,6 +331,7 @@ export default {
         this.ready = true;
 
         this.init();
+        this.updateMedsStock();
         window.addEventListener('message', this.onWindowMessage);
 
         let now = new Date;
@@ -786,6 +813,7 @@ export default {
     box-sizing: border-box;
     border: 1px solid var(--color-border);
     border-radius: 4px;
+    margin-top: 10px;
 }
 .alert-box .alert-text{
     padding-bottom: 8px;
@@ -1118,4 +1146,96 @@ export default {
     align-items: center;
     height: 22px;
 }
+/*  ==========  SUCESS ORDER STYLES  ==========  */
+.order-state{
+	width: 100%;
+	padding: 50px;
+	box-sizing: border-box;
+    display: flex;
+	flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 2px dashed #ddd;
+}
+.order-state .icon{
+    width: 50px;
+    height: 50px;
+    padding: 12px;
+    box-sizing: border-box;
+    background-color: #f6f7f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100px;
+}
+.order-state .icon i{
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    color: var(--color-main);
+}
+.order-state .icon.error{background: var(--color-error-alpha)}
+.order-state .icon.error i{
+    color: var(--color-error);
+}
+.order-state .title{
+    width: 520px;
+    text-align: center;
+	color: #000;
+	font-size: 22px;
+	font-weight: 700;
+	margin-top: 15px;
+}
+.order-state .text{
+    width: 520px;
+    text-align: center;
+	color: #708086;
+	margin-top: 5px;
+}
+.order-state .text span{color: #000;}
+.order-state .text a{color: var(--color-blue-link) !important;}
+.order-details ul{
+    margin: 0;
+    margin-top: 10px;
+    padding: 0;
+    list-style: none;
+    background: #f9f9f9;
+    padding: 14px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+.order-details li{
+    font-size: 14px;
+    color: var(--color-text-gray);
+    padding: 8px;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--color-border);
+}
+.order-state .button{
+        margin-top: 12px;
+        width: 180px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-family: var(--font-primary);
+}
+.order-state .button-success{
+        background-color: var(--color-main);
+        color: #fff;
+}
+
+
+@media screen and (max-width: 490px){
+    .order-state{padding: 18px;}
+    .order-state .title{width: 100%;font-size: 20px;}
+    .order-state .text{width: 100%;font-size: 14px;text-align: left;}
+}
+/*  ========== END SUCESS ORDER STYLES  ==========  */
 </style>

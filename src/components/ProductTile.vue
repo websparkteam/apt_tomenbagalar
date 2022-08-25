@@ -1,8 +1,8 @@
 <template>
     <div class="product-card" v-if="ready">
         <div class="tags">
-            <span class="tag new">Акция</span>
-            <span class="tag discount">-5%</span>
+            <span class="tag new">{{data.category}}</span>
+            <!-- <span class="tag discount">-5%</span> -->
         </div>
         <router-link :to="getProductUrl"><img class="image" :src="landyshTools.getImage(data.images)" @error="$event.target.src = require('../assets/no-image.jpg');" :alt="data.name"></router-link>
         <div class="title-wrap">
@@ -83,7 +83,7 @@ export default {
     padding: 8px 12px;
     border-radius: 5px;
     background-color: #eaeaea;
-    font-size: 14px;
+    font-size: 12px;
 }
 .product-card .tags .tag.new{background-color: #FFD043; color: #131313;}
 .product-card .tags .tag.discount{

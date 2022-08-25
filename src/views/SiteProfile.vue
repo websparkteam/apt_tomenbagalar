@@ -388,5 +388,29 @@ table.myorders .order ul li{
 .leave button:hover{
     opacity: .85;
 }
+.save-button{
+    padding: 8px 15px;
+    border-radius: 100px;
+    border: 1px solid var(--color-main);
+    color: var(--color-main);
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.save-button:hover{
+    color: #fff;
+    background: var(--color-main);
+}
+.save-button.pay-button {
+    font-size: .9rem;
+    margin-left: 0px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+}
 /* ===== END PROFILE STYLES ===== */
 </style>

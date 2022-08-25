@@ -6,6 +6,7 @@ import Checkout from '../views/SiteCheckout.vue'
 import Product from '../views/SiteProduct.vue'
 import Information from '../views/SiteInformation.vue'
 import Profile from '../views/SiteProfile.vue'
+import PaymentResult from '../views/PaymentResult.vue'
 
 const routes = [
   {
@@ -42,6 +43,11 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: Profile
+  },
+  {
+    path: '/payment/:state',
+    name: 'PaymentResult',
+    component: PaymentResult
   },
 ]
 
