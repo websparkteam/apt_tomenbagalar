@@ -4,7 +4,7 @@
             <div class="icon"><img src="../assets/cart.png"></div>
             <div class="group">
                 <div class="text">Советник поможет найти нужные вам товары поможет найти наличие в ближайшей аптеке. Позвоните нам !</div>
-                <a href="tel:+7 (707) 800-0000" class="number">+7 (707) 800-0000</a>
+                <a href="tel:+7 (707) 800-0000" class="number">+7 (700) 088-0453</a>
             </div>
         </div>
     </section>
@@ -13,7 +13,7 @@
             <div class="link-tree">
                 <div class="contacts">
                     <a href="https://www.instagram.com/apteka_nizkihtsen/" target="_blank"><i class="fa-brands fa-instagram"></i>apteka_nizkihtsen</a>
-                    <a href="tel:+7 (707) 800-0000"><i class="fa-solid fa-phone"></i>+7 (707) 800-0000</a>
+                    <a href="tel:+7 (707) 800-0000"><i class="fa-solid fa-phone"></i>+7 (700) 088-0453</a>
                     <a href="mailto:info@tomenbagalar.kz"><i class="fa-regular fa-envelope"></i>info@tomenbagalar.kz</a>
                 </div>
                 <div class="group">
@@ -57,7 +57,7 @@ export default {
 </script>
 
 <style scoped>
-.container{max-width: 1400px;padding: 0 10px;}
+.container{max-width: 1400px;padding: 0 10px; box-sizing: border-box;}
 
 /* ===== HELP STYLES ===== */
 #help{
@@ -156,7 +156,6 @@ footer .logo{
     border-top: 1px solid #303841;
 }
 #theend .container{
-    max-width: 1300px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
