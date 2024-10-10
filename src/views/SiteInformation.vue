@@ -7,8 +7,8 @@
                     <router-link :class="{'item': true, 'active': mode=='about'}" to="/information/about">О Нас</router-link>
                     <router-link :class="{'item': true, 'active': mode=='contacts'}" to="/information/contacts">Контакты</router-link>
                     <router-link :class="{'item': true, 'active': mode=='pharmacy'}" to="/information/pharmacy">Аптеки</router-link>
-                    <router-link :class="{'item': true, 'active': mode=='arenda'}" to="/information/arenda">Аренда</router-link>
-                    <router-link :class="{'item': true, 'active': mode=='career'}" to="/information/career">Карьера</router-link>
+                    <!-- <router-link :class="{'item': true, 'active': mode=='arenda'}" to="/information/arenda">Аренда</router-link> -->
+                    <!-- <router-link :class="{'item': true, 'active': mode=='career'}" to="/information/career">Карьера</router-link> -->
                 </div>
                 <div class="group">
                     <div class="title"><i class="fa-solid fa-store"></i>Покупателю</div>

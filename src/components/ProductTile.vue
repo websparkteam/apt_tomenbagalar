@@ -11,7 +11,7 @@
         </div>
         <div class="block">
             <div class="price-wrap">
-                <div class="price-old">{{(data.price+240).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}}</div>
+                <!-- <div class="price-old">{{(data.price+240).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}}</div> -->
                 <div class="price">{{data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}}<div class="t-sym">₸</div></div>
             </div>
             <div class="action">

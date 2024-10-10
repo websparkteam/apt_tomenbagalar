@@ -1,8 +1,8 @@
 <template>
     <div class="flex-centered">
         <div class="container">
-            <section style="margin-top: 20px;" v-if="banners_loaded">
-                <carousel :autoplay="9000" :wrap-around="true" :items-to-show="1">
+            <section id="main-banners" style="margin-top: 20px;" v-if="banners_loaded">
+                <carousel v-if="false" :autoplay="9000" :wrap-around="true" :items-to-show="1">
                     <slide v-for="(i, ind) in main_banners" :key="ind" @mousedown="adMousedown" @mouseup="adClick($event, i)" :style="{cursor: i.url ? 'pointer' : 'unset'}">
                         <img :src="i.image" alt="Banner">
                     </slide>
@@ -12,6 +12,13 @@
                         <pagination />
                     </template>
                 </carousel>
+                <div class="single">
+                    <img src="../assets/banners/1.png" alt="">
+                </div>
+                <div class="double">
+                    <img src="../assets/banners/3.png" alt="">
+                    <img src="../assets/banners/4.png" alt="">
+                </div>
             </section>
             <section>
                 <div class="pad-32">
@@ -231,6 +238,35 @@ export default {
 </style>
 
 <style scoped>
+#main-banners{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    justify-content: space-between;
+}
+#main-banners img{
+    border-radius: 10px;
+}
+#main-banners .single{
+    height: 100%;
+}
+#main-banners .single img{
+    height: 100%;
+    object-fit: cover;
+}
+#main-banners .double{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+}
+@media screen and (max-width: 720px){
+    #main-banners{
+        display: flex;
+        flex-direction: column;
+    }
+}
+
 .show-more-block{
     display: flex;
     flex-direction: column;
